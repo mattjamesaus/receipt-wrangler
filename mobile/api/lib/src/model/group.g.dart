@@ -28,6 +28,8 @@ class _$Group extends Group {
   @override
   final bool? isolateMembers;
   @override
+  final String baseCurrencyCode;
+  @override
   final GroupStatus status;
   @override
   final String? updatedAt;
@@ -46,6 +48,7 @@ class _$Group extends Group {
       required this.name,
       required this.isAllGroup,
       this.isolateMembers,
+      required this.baseCurrencyCode,
       required this.status,
       this.updatedAt})
       : super._();
@@ -70,6 +73,7 @@ class _$Group extends Group {
         name == other.name &&
         isAllGroup == other.isAllGroup &&
         isolateMembers == other.isolateMembers &&
+        baseCurrencyCode == other.baseCurrencyCode &&
         status == other.status &&
         updatedAt == other.updatedAt;
   }
@@ -87,6 +91,7 @@ class _$Group extends Group {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, isAllGroup.hashCode);
     _$hash = $jc(_$hash, isolateMembers.hashCode);
+    _$hash = $jc(_$hash, baseCurrencyCode.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, updatedAt.hashCode);
     _$hash = $jf(_$hash);
@@ -106,6 +111,7 @@ class _$Group extends Group {
           ..add('name', name)
           ..add('isAllGroup', isAllGroup)
           ..add('isolateMembers', isolateMembers)
+          ..add('baseCurrencyCode', baseCurrencyCode)
           ..add('status', status)
           ..add('updatedAt', updatedAt))
         .toString();
@@ -162,6 +168,11 @@ class GroupBuilder implements Builder<Group, GroupBuilder> {
   set isolateMembers(bool? isolateMembers) =>
       _$this._isolateMembers = isolateMembers;
 
+  String? _baseCurrencyCode;
+  String? get baseCurrencyCode => _$this._baseCurrencyCode;
+  set baseCurrencyCode(String? baseCurrencyCode) =>
+      _$this._baseCurrencyCode = baseCurrencyCode;
+
   GroupStatus? _status;
   GroupStatus? get status => _$this._status;
   set status(GroupStatus? status) => _$this._status = status;
@@ -187,6 +198,7 @@ class GroupBuilder implements Builder<Group, GroupBuilder> {
       _name = $v.name;
       _isAllGroup = $v.isAllGroup;
       _isolateMembers = $v.isolateMembers;
+      _baseCurrencyCode = $v.baseCurrencyCode;
       _status = $v.status;
       _updatedAt = $v.updatedAt;
       _$v = null;
@@ -223,6 +235,8 @@ class GroupBuilder implements Builder<Group, GroupBuilder> {
             isAllGroup: BuiltValueNullFieldError.checkNotNull(
                 isAllGroup, r'Group', 'isAllGroup'),
             isolateMembers: isolateMembers,
+            baseCurrencyCode: BuiltValueNullFieldError.checkNotNull(
+                baseCurrencyCode, r'Group', 'baseCurrencyCode'),
             status: BuiltValueNullFieldError.checkNotNull(
                 status, r'Group', 'status'),
             updatedAt: updatedAt,

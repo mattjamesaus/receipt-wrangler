@@ -71,6 +71,7 @@ api.Group _group(
           ..id = settings.groupId
           ..createdAt = ''
           ..name = name
+          ..baseCurrencyCode = 'AUD'
           ..isAllGroup = false
           ..status = api.GroupStatus.ACTIVE
           ..groupMembers = ListBuilder<api.GroupMember>(members)

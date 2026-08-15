@@ -16,18 +16,19 @@ part 'group.g.dart';
 /// Group in the system
 ///
 /// Properties:
-/// * [createdAt] 
-/// * [createdBy] 
-/// * [groupSettings] 
-/// * [groupReceiptSettings] 
+/// * [createdAt]
+/// * [createdBy]
+/// * [groupSettings]
+/// * [groupReceiptSettings]
 /// * [groupMembers] - Members of the group
-/// * [id] 
+/// * [id]
 /// * [isDefault] - Is default group (not used yet)
 /// * [name] - Name of the group
 /// * [isAllGroup] - Is all group for user
 /// * [isolateMembers] - Whether member-presence isolation is enabled for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
-/// * [status] 
-/// * [updatedAt] 
+/// * [baseCurrencyCode] - ISO 4217 accounting currency used for effective receipt amounts
+/// * [status]
+/// * [updatedAt]
 @BuiltValue()
 abstract class Group implements Built<Group, GroupBuilder> {
   @BuiltValueField(wireName: r'createdAt')
@@ -64,6 +65,10 @@ abstract class Group implements Built<Group, GroupBuilder> {
   /// Whether member-presence isolation is enabled for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
   @BuiltValueField(wireName: r'isolateMembers')
   bool? get isolateMembers;
+
+  /// ISO 4217 accounting currency used for effective receipt amounts
+  @BuiltValueField(wireName: r'baseCurrencyCode')
+  String get baseCurrencyCode;
 
   @BuiltValueField(wireName: r'status')
   GroupStatus get status;
@@ -155,6 +160,11 @@ class _$GroupSerializer implements PrimitiveSerializer<Group> {
         specifiedType: const FullType(bool),
       );
     }
+    yield r'baseCurrencyCode';
+    yield serializers.serialize(
+      object.baseCurrencyCode,
+      specifiedType: const FullType(String),
+    );
     yield r'status';
     yield serializers.serialize(
       object.status,
@@ -259,6 +269,13 @@ class _$GroupSerializer implements PrimitiveSerializer<Group> {
             specifiedType: const FullType(bool),
           ) as bool;
           result.isolateMembers = valueDes;
+          break;
+        case r'baseCurrencyCode':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.baseCurrencyCode = valueDes;
           break;
         case r'status':
           final valueDes = serializers.deserialize(

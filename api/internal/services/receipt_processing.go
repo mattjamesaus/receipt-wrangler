@@ -487,6 +487,7 @@ func (service ReceiptProcessingService) buildPrompt(
 		templateVariable := structs.PromptTemplateVariable(variable)
 		return templateVariableMap[templateVariable]
 	})
+	realPrompt += "\n\nCurrency extraction contract: include documentCurrencyCode as the three-letter ISO 4217 currency printed on the receipt and documentAmount as the total printed on the receipt. Treat both as reviewable suggestions. Do not calculate exchange rates, base-currency amounts, FX status, deductibility, or tax treatment."
 
 	endedAt := time.Now()
 	systemTaskCommand.EndedAt = &endedAt

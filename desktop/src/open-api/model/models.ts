@@ -33,6 +33,7 @@ export * from './featureConfig';
 export * from './fileData';
 export * from './fileDataView';
 export * from './filterOperation';
+export * from './fxStatus';
 export * from './getNewRefreshToken200Response';
 export * from './getSystemTaskCommand';
 export * from './group';

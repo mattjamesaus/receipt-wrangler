@@ -22,6 +22,7 @@ import {
   CustomField,
   CustomFieldValue,
   FileDataView,
+  FxStatus,
   Group,
   Item,
   Permission,
@@ -55,6 +56,8 @@ import { buildItemForm } from "../utils/form.utils";
   standalone: false
 })
 export class ReceiptFormComponent implements OnInit {
+  protected readonly FxStatus = FxStatus;
+
   public readonly shareListComponent = viewChild.required(ShareListComponent);
 
   public readonly itemListComponent = viewChild.required(ItemListComponent);
@@ -155,6 +158,11 @@ export class ReceiptFormComponent implements OnInit {
   public formHeaderText!: Signal<string | undefined>;
 
   public receiptStatusOptions = RECEIPT_STATUS_OPTIONS;
+
+  public fxStatusOptions = [FxStatus.Estimated, FxStatus.Confirmed, FxStatus.NeedsReview].map((value) => ({
+    value,
+    displayValue: value.replaceAll("_", " "),
+  }));
 
   public showLargeImagePreview: boolean = false;
 
@@ -313,7 +321,7 @@ export class ReceiptFormComponent implements OnInit {
 
   private updateAmountFromItems(): void {
     const total = this.calculateItemsTotal();
-    this.form.get("amount")?.setValue(total.toFixed(2), { emitEvent: false });
+    this.form.get("documentAmount")?.setValue(total.toFixed(2), { emitEvent: false });
   }
 
   private calculateItemsTotal(): number {
@@ -413,9 +421,18 @@ export class ReceiptFormComponent implements OnInit {
     this.form = this.formBuilder.group({
       name: [this.originalReceipt?.name ?? "", Validators.required],
       amount: [
-        this.originalReceipt?.amount ?? "",
+        this.originalReceipt?.amount ?? 0,
         [Validators.required],
       ],
+      documentAmount: [
+        this.originalReceipt?.documentAmount ?? this.originalReceipt?.amount ?? "",
+        [Validators.required],
+      ],
+      documentCurrencyCode: [
+        this.originalReceipt?.documentCurrencyCode ?? group?.baseCurrencyCode ?? "AUD",
+        [Validators.required, Validators.pattern(/^[A-Za-z]{3}$/)],
+      ],
+      fxStatus: this.originalReceipt?.fxStatus ?? FxStatus.Domestic,
       syncAmountWithItems: false,
       categories: this.formBuilder.array(
         this.originalReceipt?.categories ?? []
@@ -646,6 +663,8 @@ export class ReceiptFormComponent implements OnInit {
     const keysWithDefaults = {
       name: "",
       amount: "0",
+      documentAmount: "0",
+      documentCurrencyCode: "",
       date: "0001-01-01T00:00:00Z",
       paidByUserId: 0,
       status: "",
@@ -654,6 +673,12 @@ export class ReceiptFormComponent implements OnInit {
       let value = (magicReceipt as any)[key] as string | Date;
       if (value && value !== keysWithDefaults[key]) {
         switch (key) {
+          case "amount":
+            this.patchMagicValue(key, magicReceipt);
+            if (!(magicReceipt as any).documentAmount) {
+              this.form.get("documentAmount")?.setValue(value);
+            }
+            break;
           case "date":
             value = this.handleDateMagicFill(value as string);
             this.form.patchValue({

@@ -20,6 +20,9 @@ Receipt getDefaultReceipt() {
         ..groupId = 0
         ..paidByUserId = 0
         ..amount = "0"
+        ..documentAmount = "0"
+        ..documentCurrencyCode = "AUD"
+        ..fxStatus = FxStatus.DOMESTIC
         ..name = ""
         ..status = ReceiptStatus.OPEN
         ..categories = ListBuilder<Category>([])

@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { TestBed } from "@angular/core/testing";
 import { NgxsModule, Store } from "@ngxs/store";
-import { SearchResult } from "../../open-api";
+import { FxStatus, SearchResult } from "../../open-api";
 import { GroupState } from "../../store";
 import { SearchResultPipe } from "./search-result.pipe";
 
@@ -44,6 +44,10 @@ describe("SearchResultPipe", () => {
       type: "receipt",
       groupId: 1,
       date: "2022-12-12",
+      amount: "10.00",
+      documentAmount: "10.00",
+      documentCurrencyCode: "AUD",
+      fxStatus: FxStatus.Domestic,
       createdAt: "2022-12-12",
     };
 

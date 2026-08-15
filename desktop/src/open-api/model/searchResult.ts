@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FxStatus } from './fxStatus';
 import { ReceiptStatus } from './receiptStatus';
 
 
@@ -16,7 +17,19 @@ export interface SearchResult {
     type: string;
     groupId: number;
     date: string;
-    amount?: string;
+    /**
+     * Effective amount in the group\'s base currency
+     */
+    amount: string;
+    /**
+     * Original total printed on the receipt evidence
+     */
+    documentAmount: string;
+    /**
+     * ISO 4217 currency printed on the receipt evidence
+     */
+    documentCurrencyCode: string;
+    fxStatus: FxStatus;
     receiptStatus?: ReceiptStatus;
     paidByUserId?: number;
     createdAt: string;

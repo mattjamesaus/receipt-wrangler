@@ -226,6 +226,7 @@ Class | Method | HTTP request | Description
  - [FileData](doc/FileData.md)
  - [FileDataView](doc/FileDataView.md)
  - [FilterOperation](doc/FilterOperation.md)
+ - [FxStatus](doc/FxStatus.md)
  - [GetNewRefreshToken200Response](doc/GetNewRefreshToken200Response.md)
  - [GetSystemTaskCommand](doc/GetSystemTaskCommand.md)
  - [Group](doc/Group.md)

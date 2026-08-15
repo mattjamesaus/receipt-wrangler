@@ -12,6 +12,12 @@ class _$UpsertReceiptCommand extends UpsertReceiptCommand {
   @override
   final String amount;
   @override
+  final String? documentAmount;
+  @override
+  final String? documentCurrencyCode;
+  @override
+  final FxStatus? fxStatus;
+  @override
   final String date;
   @override
   final int groupId;
@@ -37,6 +43,9 @@ class _$UpsertReceiptCommand extends UpsertReceiptCommand {
   _$UpsertReceiptCommand._(
       {required this.name,
       required this.amount,
+      this.documentAmount,
+      this.documentCurrencyCode,
+      this.fxStatus,
       required this.date,
       required this.groupId,
       required this.paidByUserId,
@@ -62,6 +71,9 @@ class _$UpsertReceiptCommand extends UpsertReceiptCommand {
     return other is UpsertReceiptCommand &&
         name == other.name &&
         amount == other.amount &&
+        documentAmount == other.documentAmount &&
+        documentCurrencyCode == other.documentCurrencyCode &&
+        fxStatus == other.fxStatus &&
         date == other.date &&
         groupId == other.groupId &&
         paidByUserId == other.paidByUserId &&
@@ -78,6 +90,9 @@ class _$UpsertReceiptCommand extends UpsertReceiptCommand {
     var _$hash = 0;
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
+    _$hash = $jc(_$hash, documentAmount.hashCode);
+    _$hash = $jc(_$hash, documentCurrencyCode.hashCode);
+    _$hash = $jc(_$hash, fxStatus.hashCode);
     _$hash = $jc(_$hash, date.hashCode);
     _$hash = $jc(_$hash, groupId.hashCode);
     _$hash = $jc(_$hash, paidByUserId.hashCode);
@@ -96,6 +111,9 @@ class _$UpsertReceiptCommand extends UpsertReceiptCommand {
     return (newBuiltValueToStringHelper(r'UpsertReceiptCommand')
           ..add('name', name)
           ..add('amount', amount)
+          ..add('documentAmount', documentAmount)
+          ..add('documentCurrencyCode', documentCurrencyCode)
+          ..add('fxStatus', fxStatus)
           ..add('date', date)
           ..add('groupId', groupId)
           ..add('paidByUserId', paidByUserId)
@@ -120,6 +138,20 @@ class UpsertReceiptCommandBuilder
   String? _amount;
   String? get amount => _$this._amount;
   set amount(String? amount) => _$this._amount = amount;
+
+  String? _documentAmount;
+  String? get documentAmount => _$this._documentAmount;
+  set documentAmount(String? documentAmount) =>
+      _$this._documentAmount = documentAmount;
+
+  String? _documentCurrencyCode;
+  String? get documentCurrencyCode => _$this._documentCurrencyCode;
+  set documentCurrencyCode(String? documentCurrencyCode) =>
+      _$this._documentCurrencyCode = documentCurrencyCode;
+
+  FxStatus? _fxStatus;
+  FxStatus? get fxStatus => _$this._fxStatus;
+  set fxStatus(FxStatus? fxStatus) => _$this._fxStatus = fxStatus;
 
   String? _date;
   String? get date => _$this._date;
@@ -175,6 +207,9 @@ class UpsertReceiptCommandBuilder
     if ($v != null) {
       _name = $v.name;
       _amount = $v.amount;
+      _documentAmount = $v.documentAmount;
+      _documentCurrencyCode = $v.documentCurrencyCode;
+      _fxStatus = $v.fxStatus;
       _date = $v.date;
       _groupId = $v.groupId;
       _paidByUserId = $v.paidByUserId;
@@ -211,6 +246,9 @@ class UpsertReceiptCommandBuilder
                 name, r'UpsertReceiptCommand', 'name'),
             amount: BuiltValueNullFieldError.checkNotNull(
                 amount, r'UpsertReceiptCommand', 'amount'),
+            documentAmount: documentAmount,
+            documentCurrencyCode: documentCurrencyCode,
+            fxStatus: fxStatus,
             date: BuiltValueNullFieldError.checkNotNull(
                 date, r'UpsertReceiptCommand', 'date'),
             groupId: BuiltValueNullFieldError.checkNotNull(

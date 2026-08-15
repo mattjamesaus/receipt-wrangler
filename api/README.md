@@ -18,6 +18,10 @@ Visit our [official documentation](https://receiptwrangler.io) for comprehensive
 
 For development guidelines, configuration details, and API documentation, please refer to our [developer documentation](https://receiptwrangler.io/docs/category/development). Contributions welcome!
 
+### Historical exchange rates
+
+Foreign-currency receipts use the public Frankfurter API and the ECB provider by default. Operators can override the endpoint with `FX_PROVIDER_BASE_URL` (for example, to use a compatible internal proxy) and the Frankfurter provider identifier with `FX_RATE_PROVIDER`. Neither setting accepts or requires banking credentials.
+
 ## License
 
 This project is licensed under the AGPL-3.0 license - see the LICENSE file for details.

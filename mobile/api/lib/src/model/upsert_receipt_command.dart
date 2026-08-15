@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/fx_status.dart';
 import 'package:openapi/src/model/upsert_item_command.dart';
 import 'package:openapi/src/model/receipt_status.dart';
 import 'package:built_collection/built_collection.dart';
@@ -19,11 +20,14 @@ part 'upsert_receipt_command.g.dart';
 ///
 /// Properties:
 /// * [name] - Receipt name
-/// * [amount] - Receipt total amount
+/// * [amount] - Effective base-currency amount; required for compatibility and confirmed FX values
+/// * [documentAmount] - Original total printed on the receipt; defaults to amount when omitted
+/// * [documentCurrencyCode] - ISO 4217 currency printed on the receipt; defaults to the group base currency
+/// * [fxStatus]
 /// * [date] - Receipt date
 /// * [groupId] - Group foreign key
 /// * [paidByUserId] - User paid foreign key
-/// * [status] 
+/// * [status]
 /// * [categories] - Categories associated to receipt
 /// * [tags] - Tags associated to receipt
 /// * [receiptItems] - Items associated to receipt
@@ -35,9 +39,21 @@ abstract class UpsertReceiptCommand implements Built<UpsertReceiptCommand, Upser
   @BuiltValueField(wireName: r'name')
   String get name;
 
-  /// Receipt total amount
+  /// Effective base-currency amount; required for compatibility and confirmed FX values
   @BuiltValueField(wireName: r'amount')
   String get amount;
+
+  /// Original total printed on the receipt; defaults to amount when omitted
+  @BuiltValueField(wireName: r'documentAmount')
+  String? get documentAmount;
+
+  /// ISO 4217 currency printed on the receipt; defaults to the group base currency
+  @BuiltValueField(wireName: r'documentCurrencyCode')
+  String? get documentCurrencyCode;
+
+  @BuiltValueField(wireName: r'fxStatus')
+  FxStatus? get fxStatus;
+  // enum fxStatusEnum {  DOMESTIC,  ESTIMATED,  CONFIRMED,  NEEDS_REVIEW,  };
 
   /// Receipt date
   @BuiltValueField(wireName: r'date')
@@ -108,6 +124,27 @@ class _$UpsertReceiptCommandSerializer implements PrimitiveSerializer<UpsertRece
       object.amount,
       specifiedType: const FullType(String),
     );
+    if (object.documentAmount != null) {
+      yield r'documentAmount';
+      yield serializers.serialize(
+        object.documentAmount,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.documentCurrencyCode != null) {
+      yield r'documentCurrencyCode';
+      yield serializers.serialize(
+        object.documentCurrencyCode,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.fxStatus != null) {
+      yield r'fxStatus';
+      yield serializers.serialize(
+        object.fxStatus,
+        specifiedType: const FullType(FxStatus),
+      );
+    }
     yield r'date';
     yield serializers.serialize(
       object.date,
@@ -199,6 +236,27 @@ class _$UpsertReceiptCommandSerializer implements PrimitiveSerializer<UpsertRece
             specifiedType: const FullType(String),
           ) as String;
           result.amount = valueDes;
+          break;
+        case r'documentAmount':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentAmount = valueDes;
+          break;
+        case r'documentCurrencyCode':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentCurrencyCode = valueDes;
+          break;
+        case r'fxStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(FxStatus),
+          ) as FxStatus;
+          result.fxStatus = valueDes;
           break;
         case r'date':
           final valueDes = serializers.deserialize(

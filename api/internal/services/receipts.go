@@ -142,15 +142,18 @@ func (service ReceiptService) SearchReceiptsForUser(userId uint, query string, l
 
 	for _, receipt := range receipts {
 		results = append(results, structs.SearchResult{
-			ID:            receipt.ID,
-			GroupID:       receipt.GroupId,
-			Name:          receipt.Name,
-			Date:          receipt.Date,
-			Type:          "Receipt",
-			Amount:        receipt.Amount,
-			ReceiptStatus: receipt.Status,
-			PaidByUserId:  receipt.PaidByUserID,
-			CreatedAt:     receipt.CreatedAt,
+			ID:                   receipt.ID,
+			GroupID:              receipt.GroupId,
+			Name:                 receipt.Name,
+			Date:                 receipt.Date,
+			Type:                 "Receipt",
+			Amount:               receipt.Amount,
+			DocumentAmount:       receipt.DocumentAmount,
+			DocumentCurrencyCode: receipt.DocumentCurrencyCode,
+			FxStatus:             receipt.FxStatus,
+			ReceiptStatus:        receipt.Status,
+			PaidByUserId:         receipt.PaidByUserID,
+			CreatedAt:            receipt.CreatedAt,
 		})
 	}
 

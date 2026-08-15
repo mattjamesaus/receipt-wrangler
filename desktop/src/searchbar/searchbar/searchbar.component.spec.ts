@@ -8,7 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { of } from "rxjs";
-import { ApiModule, SearchResult, SearchService } from "../../open-api";
+import { ApiModule, FxStatus, SearchResult, SearchService } from "../../open-api";
 
 import { SearchbarComponent } from "./searchbar.component";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
@@ -51,6 +51,10 @@ describe("SearchbarComponent", () => {
       type: "Receipt",
       name: "Hello",
       date: "totally a date",
+      amount: "10.00",
+      documentAmount: "10.00",
+      documentCurrencyCode: "AUD",
+      fxStatus: FxStatus.Domestic,
       createdAt: "totally a date",
     };
 
@@ -66,6 +70,10 @@ describe("SearchbarComponent", () => {
       type: "Not a valid type",
       name: "Hello",
       date: "totally a date",
+      amount: "10.00",
+      documentAmount: "10.00",
+      documentCurrencyCode: "AUD",
+      fxStatus: FxStatus.Domestic,
       createdAt: "totally a date",
     };
 

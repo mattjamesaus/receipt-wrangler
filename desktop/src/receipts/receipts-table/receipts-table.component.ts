@@ -19,6 +19,7 @@ import { ReceiptTableColumnConfig } from "../../interfaces";
 import {
   BulkStatusUpdateCommand,
   Category,
+  FxStatus,
   Group,
   GroupsService,
   PagedDataDataInner,
@@ -48,6 +49,8 @@ import { ColumnConfigurationDialogComponent } from "../column-configuration-dial
   standalone: false
 })
 export class ReceiptsTableComponent implements OnInit, AfterViewInit {
+  protected readonly FxStatus = FxStatus;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private groupsService: GroupsService,

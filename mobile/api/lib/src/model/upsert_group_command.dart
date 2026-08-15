@@ -19,7 +19,8 @@ part 'upsert_group_command.g.dart';
 /// * [name] - Name of the group
 /// * [isAllGroup] - Is all group for user
 /// * [isolateMembers] - Whether to enable member-presence isolation for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
-/// * [status] 
+/// * [baseCurrencyCode] - ISO 4217 accounting currency; defaults to AUD when omitted
+/// * [status]
 @BuiltValue()
 abstract class UpsertGroupCommand implements Built<UpsertGroupCommand, UpsertGroupCommandBuilder> {
   /// Members of the group
@@ -41,6 +42,10 @@ abstract class UpsertGroupCommand implements Built<UpsertGroupCommand, UpsertGro
   /// Whether to enable member-presence isolation for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
   @BuiltValueField(wireName: r'isolateMembers')
   bool? get isolateMembers;
+
+  /// ISO 4217 accounting currency; defaults to AUD when omitted
+  @BuiltValueField(wireName: r'baseCurrencyCode')
+  String? get baseCurrencyCode;
 
   @BuiltValueField(wireName: r'status')
   GroupStatus get status;
@@ -98,6 +103,13 @@ class _$UpsertGroupCommandSerializer implements PrimitiveSerializer<UpsertGroupC
       yield serializers.serialize(
         object.isolateMembers,
         specifiedType: const FullType(bool),
+      );
+    }
+    if (object.baseCurrencyCode != null) {
+      yield r'baseCurrencyCode';
+      yield serializers.serialize(
+        object.baseCurrencyCode,
+        specifiedType: const FullType(String),
       );
     }
     yield r'status';
@@ -162,6 +174,13 @@ class _$UpsertGroupCommandSerializer implements PrimitiveSerializer<UpsertGroupC
             specifiedType: const FullType(bool),
           ) as bool;
           result.isolateMembers = valueDes;
+          break;
+        case r'baseCurrencyCode':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.baseCurrencyCode = valueDes;
           break;
         case r'status':
           final valueDes = serializers.deserialize(

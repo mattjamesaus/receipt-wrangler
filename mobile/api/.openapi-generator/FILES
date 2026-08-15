@@ -44,6 +44,7 @@ doc/FeatureConfigApi.md
 doc/FileData.md
 doc/FileDataView.md
 doc/FilterOperation.md
+doc/FxStatus.md
 doc/GetNewRefreshToken200Response.md
 doc/GetSystemTaskCommand.md
 doc/Group.md
@@ -225,6 +226,7 @@ lib/src/model/feature_config.dart
 lib/src/model/file_data.dart
 lib/src/model/file_data_view.dart
 lib/src/model/filter_operation.dart
+lib/src/model/fx_status.dart
 lib/src/model/get_new_refresh_token200_response.dart
 lib/src/model/get_system_task_command.dart
 lib/src/model/group.dart

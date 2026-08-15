@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/fx_status.dart';
 import 'package:openapi/src/model/receipt_status.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:openapi/src/model/category.dart';
@@ -19,29 +20,69 @@ part 'receipt.g.dart';
 /// Receipt
 ///
 /// Properties:
-/// * [amount] - Receipt total amount
+/// * [amount] - Effective amount in the group's base currency
+/// * [documentAmount] - Original total printed on the receipt evidence
+/// * [documentCurrencyCode] - ISO 4217 currency printed on the receipt evidence
+/// * [estimatedBaseAmount] - Historical-rate estimate in the group's base currency
+/// * [fxRate] - Exact document-to-base exchange rate used for the estimate
+/// * [fxDate] - Effective date returned by the FX provider
+/// * [fxProvider] - Provider used for the historical estimate
+/// * [fxRetrievedAt] - UTC instant at which the rate was retrieved
+/// * [fxStatus]
 /// * [categories] - Categories associated to receipt
 /// * [comments] - Comments associated to receipt
 /// * [customFields] - Custom fields associated to receipt
-/// * [createdAt] 
-/// * [createdBy] 
+/// * [createdAt]
+/// * [createdBy]
 /// * [date] - Receipt date
 /// * [groupId] - Group foreign key
-/// * [id] 
+/// * [id]
 /// * [imageFiles] - Files associated to receipt
 /// * [name] - Receipt name
 /// * [paidByUserId] - User paid foreign key
 /// * [receiptItems] - Items associated to receipt
 /// * [resolvedDate] - Date resolved
-/// * [status] 
+/// * [status]
 /// * [tags] - Tags associated to receipt
-/// * [updatedAt] 
+/// * [updatedAt]
 /// * [createdByString] - Created by string, which is anything that is not a user
 @BuiltValue()
 abstract class Receipt implements Built<Receipt, ReceiptBuilder> {
-  /// Receipt total amount
+  /// Effective amount in the group's base currency
   @BuiltValueField(wireName: r'amount')
   String get amount;
+
+  /// Original total printed on the receipt evidence
+  @BuiltValueField(wireName: r'documentAmount')
+  String get documentAmount;
+
+  /// ISO 4217 currency printed on the receipt evidence
+  @BuiltValueField(wireName: r'documentCurrencyCode')
+  String get documentCurrencyCode;
+
+  /// Historical-rate estimate in the group's base currency
+  @BuiltValueField(wireName: r'estimatedBaseAmount')
+  String? get estimatedBaseAmount;
+
+  /// Exact document-to-base exchange rate used for the estimate
+  @BuiltValueField(wireName: r'fxRate')
+  String? get fxRate;
+
+  /// Effective date returned by the FX provider
+  @BuiltValueField(wireName: r'fxDate')
+  DateTime? get fxDate;
+
+  /// Provider used for the historical estimate
+  @BuiltValueField(wireName: r'fxProvider')
+  String? get fxProvider;
+
+  /// UTC instant at which the rate was retrieved
+  @BuiltValueField(wireName: r'fxRetrievedAt')
+  DateTime? get fxRetrievedAt;
+
+  @BuiltValueField(wireName: r'fxStatus')
+  FxStatus get fxStatus;
+  // enum fxStatusEnum {  DOMESTIC,  ESTIMATED,  CONFIRMED,  NEEDS_REVIEW,  };
 
   /// Categories associated to receipt
   @BuiltValueField(wireName: r'categories')
@@ -134,6 +175,56 @@ class _$ReceiptSerializer implements PrimitiveSerializer<Receipt> {
     yield serializers.serialize(
       object.amount,
       specifiedType: const FullType(String),
+    );
+    yield r'documentAmount';
+    yield serializers.serialize(
+      object.documentAmount,
+      specifiedType: const FullType(String),
+    );
+    yield r'documentCurrencyCode';
+    yield serializers.serialize(
+      object.documentCurrencyCode,
+      specifiedType: const FullType(String),
+    );
+    if (object.estimatedBaseAmount != null) {
+      yield r'estimatedBaseAmount';
+      yield serializers.serialize(
+        object.estimatedBaseAmount,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.fxRate != null) {
+      yield r'fxRate';
+      yield serializers.serialize(
+        object.fxRate,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.fxDate != null) {
+      yield r'fxDate';
+      yield serializers.serialize(
+        object.fxDate,
+        specifiedType: const FullType(DateTime),
+      );
+    }
+    if (object.fxProvider != null) {
+      yield r'fxProvider';
+      yield serializers.serialize(
+        object.fxProvider,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.fxRetrievedAt != null) {
+      yield r'fxRetrievedAt';
+      yield serializers.serialize(
+        object.fxRetrievedAt,
+        specifiedType: const FullType(DateTime),
+      );
+    }
+    yield r'fxStatus';
+    yield serializers.serialize(
+      object.fxStatus,
+      specifiedType: const FullType(FxStatus),
     );
     yield r'categories';
     yield serializers.serialize(
@@ -261,6 +352,62 @@ class _$ReceiptSerializer implements PrimitiveSerializer<Receipt> {
             specifiedType: const FullType(String),
           ) as String;
           result.amount = valueDes;
+          break;
+        case r'documentAmount':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentAmount = valueDes;
+          break;
+        case r'documentCurrencyCode':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentCurrencyCode = valueDes;
+          break;
+        case r'estimatedBaseAmount':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.estimatedBaseAmount = valueDes;
+          break;
+        case r'fxRate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.fxRate = valueDes;
+          break;
+        case r'fxDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.fxDate = valueDes;
+          break;
+        case r'fxProvider':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.fxProvider = valueDes;
+          break;
+        case r'fxRetrievedAt':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.fxRetrievedAt = valueDes;
+          break;
+        case r'fxStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(FxStatus),
+          ) as FxStatus;
+          result.fxStatus = valueDes;
           break;
         case r'categories':
           final valueDes = serializers.deserialize(

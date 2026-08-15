@@ -28,6 +28,7 @@ import { FileData } from './fileData';
 import { Comment } from './comment';
 import { Receipt } from './receipt';
 import { CustomFieldType } from './customFieldType';
+import { FxStatus } from './fxStatus';
 import { AiType } from './aiType';
 import { CustomField } from './customField';
 import { AssociatedEntityType } from './associatedEntityType';
@@ -38,9 +39,38 @@ import { Tag } from './tag';
 
 export interface PagedDataDataInner { 
     /**
-     * Receipt total amount
+     * Effective amount in the group\'s base currency
      */
     amount: string;
+    /**
+     * Original total printed on the receipt evidence
+     */
+    documentAmount: string;
+    /**
+     * ISO 4217 currency printed on the receipt evidence
+     */
+    documentCurrencyCode: string;
+    /**
+     * Historical-rate estimate in the group\'s base currency
+     */
+    estimatedBaseAmount?: string;
+    /**
+     * Exact document-to-base exchange rate used for the estimate
+     */
+    fxRate?: string;
+    /**
+     * Effective date returned by the FX provider
+     */
+    fxDate?: string;
+    /**
+     * Provider used for the historical estimate
+     */
+    fxProvider?: string;
+    /**
+     * UTC instant at which the rate was retrieved
+     */
+    fxRetrievedAt?: string;
+    fxStatus: FxStatus;
     /**
      * Categories associated to receipt
      */
@@ -114,6 +144,10 @@ export interface PagedDataDataInner {
      * Whether member-presence isolation is enabled for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
      */
     isolateMembers?: boolean;
+    /**
+     * ISO 4217 accounting currency used for effective receipt amounts
+     */
+    baseCurrencyCode: string;
     /**
      * Number of receipts associated with this tag
      */

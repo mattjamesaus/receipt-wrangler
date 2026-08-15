@@ -11,6 +11,7 @@ import (
 // Name of the one-time migration that assigns the seeded legacy-equivalent roles
 // to existing users and group members.
 const assignLegacyEquivalentRolesMigration = "assign-legacy-equivalent-roles"
+const backfillReceiptCurrencyMigration = "backfill-receipt-currency"
 
 // dataMigration is a single one-time data migration. Each runs at most once per
 // database; once applied it is recorded in the data_migrations ledger so it is
@@ -24,6 +25,7 @@ type dataMigration struct {
 // migrations are appended here.
 var dataMigrations = []dataMigration{
 	{name: assignLegacyEquivalentRolesMigration, run: assignLegacyEquivalentRoles},
+	{name: backfillReceiptCurrencyMigration, run: backfillReceiptCurrency},
 }
 
 // RunDataMigrations applies any registered one-time data migrations that have
@@ -115,4 +117,27 @@ func assignLegacyEquivalentRoles(tx *gorm.DB) error {
 	}
 
 	return nil
+}
+
+// backfillReceiptCurrency gives pre-feature rows explicit accounting semantics.
+// AutoMigrate creates the columns first; this one-time data step then copies the
+// existing effective amount into the original/estimated fields exactly as the
+// compatibility contract requires.
+func backfillReceiptCurrency(tx *gorm.DB) error {
+	if err := tx.Model(&models.Group{}).
+		Where("base_currency_code IS NULL OR base_currency_code = ''").
+		Update("base_currency_code", defaultBaseCurrencyCode).Error; err != nil {
+		return err
+	}
+
+	return tx.Model(&models.Receipt{}).Where("1 = 1").Updates(map[string]interface{}{
+		"document_currency_code": defaultBaseCurrencyCode,
+		"document_amount":        gorm.Expr("amount"),
+		"estimated_base_amount":  gorm.Expr("amount"),
+		"fx_rate":                1,
+		"fx_date":                gorm.Expr("date"),
+		"fx_provider":            "IDENTITY",
+		"fx_retrieved_at":        nil,
+		"fx_status":              models.FX_DOMESTIC,
+	}).Error
 }

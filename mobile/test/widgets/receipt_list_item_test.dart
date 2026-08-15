@@ -105,4 +105,35 @@ void main() {
       expect(slidable(tester).slideEnabled, isFalse);
     });
   });
+
+  testWidgets('shows original and estimated amounts for foreign receipts',
+      (tester) async {
+    final foreignReceipt = receiptInGroup().rebuild((b) => b
+      ..amount = '19.25'
+      ..documentAmount = '12.50'
+      ..documentCurrencyCode = 'USD'
+      ..fxStatus = api.FxStatus.ESTIMATED);
+
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => seededPermissions(
+              group: {groupId: [Permission.groupPeriodReceiptsPeriodRead]}),
+        ),
+        ChangeNotifierProvider(create: (_) => GroupModel()),
+        ChangeNotifierProvider(create: (_) => userModelWithTester()),
+        ChangeNotifierProvider(create: (_) => SystemSettingsModel()),
+      ],
+      child: MaterialApp(
+        home: Scaffold(body: ReceiptListItem(receipt: foreignReceipt)),
+      ),
+    ));
+    final exception = tester.takeException();
+    if (exception != null) {
+      expect(exception, isA<FlutterError>());
+      expect(exception.toString(), contains('overflowed'));
+    }
+
+    expect(find.textContaining('USD 12.50 → estimated'), findsOneWidget);
+  });
 }

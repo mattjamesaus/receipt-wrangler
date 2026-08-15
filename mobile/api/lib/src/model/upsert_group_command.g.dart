@@ -18,6 +18,8 @@ class _$UpsertGroupCommand extends UpsertGroupCommand {
   @override
   final bool? isolateMembers;
   @override
+  final String? baseCurrencyCode;
+  @override
   final GroupStatus status;
 
   factory _$UpsertGroupCommand(
@@ -30,6 +32,7 @@ class _$UpsertGroupCommand extends UpsertGroupCommand {
       required this.name,
       this.isAllGroup,
       this.isolateMembers,
+      this.baseCurrencyCode,
       required this.status})
       : super._();
   @override
@@ -50,6 +53,7 @@ class _$UpsertGroupCommand extends UpsertGroupCommand {
         name == other.name &&
         isAllGroup == other.isAllGroup &&
         isolateMembers == other.isolateMembers &&
+        baseCurrencyCode == other.baseCurrencyCode &&
         status == other.status;
   }
 
@@ -61,6 +65,7 @@ class _$UpsertGroupCommand extends UpsertGroupCommand {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, isAllGroup.hashCode);
     _$hash = $jc(_$hash, isolateMembers.hashCode);
+    _$hash = $jc(_$hash, baseCurrencyCode.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -74,6 +79,7 @@ class _$UpsertGroupCommand extends UpsertGroupCommand {
           ..add('name', name)
           ..add('isAllGroup', isAllGroup)
           ..add('isolateMembers', isolateMembers)
+          ..add('baseCurrencyCode', baseCurrencyCode)
           ..add('status', status))
         .toString();
   }
@@ -106,6 +112,11 @@ class UpsertGroupCommandBuilder
   set isolateMembers(bool? isolateMembers) =>
       _$this._isolateMembers = isolateMembers;
 
+  String? _baseCurrencyCode;
+  String? get baseCurrencyCode => _$this._baseCurrencyCode;
+  set baseCurrencyCode(String? baseCurrencyCode) =>
+      _$this._baseCurrencyCode = baseCurrencyCode;
+
   GroupStatus? _status;
   GroupStatus? get status => _$this._status;
   set status(GroupStatus? status) => _$this._status = status;
@@ -122,6 +133,7 @@ class UpsertGroupCommandBuilder
       _name = $v.name;
       _isAllGroup = $v.isAllGroup;
       _isolateMembers = $v.isolateMembers;
+      _baseCurrencyCode = $v.baseCurrencyCode;
       _status = $v.status;
       _$v = null;
     }
@@ -152,6 +164,7 @@ class UpsertGroupCommandBuilder
                 name, r'UpsertGroupCommand', 'name'),
             isAllGroup: isAllGroup,
             isolateMembers: isolateMembers,
+            baseCurrencyCode: baseCurrencyCode,
             status: BuiltValueNullFieldError.checkNotNull(
                 status, r'UpsertGroupCommand', 'status'),
           );

@@ -42,6 +42,10 @@ export interface Group {
      * Whether member-presence isolation is enabled for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
      */
     isolateMembers?: boolean;
+    /**
+     * ISO 4217 accounting currency used for effective receipt amounts
+     */
+    baseCurrencyCode: string;
     status: GroupStatus;
     updatedAt?: string;
 }

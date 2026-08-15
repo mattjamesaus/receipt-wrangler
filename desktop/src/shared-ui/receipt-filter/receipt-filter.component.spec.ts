@@ -73,6 +73,14 @@ describe("ReceiptFilterComponent", () => {
       operation: FilterOperation.GreaterThan,
       value: "2023-01-06",
     },
+    documentCurrency: {
+      operation: null,
+      value: null,
+    },
+    fxStatus: {
+      operation: null,
+      value: [],
+    },
   };
 
   beforeEach(() => {

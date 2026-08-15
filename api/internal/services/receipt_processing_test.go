@@ -15,6 +15,8 @@ import (
 	"receipt-wrangler/api/internal/models"
 	"receipt-wrangler/api/internal/repositories"
 	"receipt-wrangler/api/internal/utils"
+
+	"github.com/shopspring/decimal"
 )
 
 func TestFormatEmailContent_BothPresent(t *testing.T) {
@@ -335,6 +337,17 @@ func TestCleanResponse_TrailingCommaOutputIsParseable(t *testing.T) {
 	}
 	if receipt.Items[1].Name != "Beans, baked" {
 		t.Errorf("expected comma-containing item name preserved, got %q", receipt.Items[1].Name)
+	}
+}
+
+func TestCleanResponse_ParsesDocumentCurrencySuggestions(t *testing.T) {
+	cleaned := (ReceiptProcessingService{}).cleanResponse(`{"name":"US Store","amount":100,"documentAmount":100,"documentCurrencyCode":"USD"}`)
+	var receipt commands.UpsertReceiptCommand
+	if err := json.Unmarshal([]byte(cleaned), &receipt); err != nil {
+		t.Fatal(err)
+	}
+	if receipt.DocumentCurrencyCode != "USD" || receipt.DocumentAmount == nil || !receipt.DocumentAmount.Equal(decimal.NewFromInt(100)) {
+		t.Errorf("currency suggestion = %s %v", receipt.DocumentCurrencyCode, receipt.DocumentAmount)
 	}
 }
 

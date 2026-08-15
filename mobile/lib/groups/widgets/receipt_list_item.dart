@@ -82,8 +82,16 @@ class _ReceiptListItem extends State<ReceiptListItem> {
     var formattedDate =
         formatDate(defaultDateFormat, DateTime.parse(widget.receipt.date));
 
+    var amountText = formattedAmount;
+    if (widget.receipt.fxStatus != api.FxStatus.DOMESTIC) {
+      final conversion = widget.receipt.fxStatus == api.FxStatus.NEEDS_REVIEW
+          ? "needs FX review"
+          : "${widget.receipt.fxStatus == api.FxStatus.CONFIRMED ? 'confirmed' : 'estimated'} $formattedAmount";
+      amountText = "${widget.receipt.documentCurrencyCode} ${widget.receipt.documentAmount} → $conversion";
+    }
+
     return Text(
-        "${formattedAmount} paid by ${user?.displayName ?? userNotFoundText} on ${formattedDate}");
+        "$amountText paid by ${user?.displayName ?? userNotFoundText} on $formattedDate");
   }
 
   Widget buildListTile() {

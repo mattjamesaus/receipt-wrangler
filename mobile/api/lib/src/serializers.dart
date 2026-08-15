@@ -49,6 +49,7 @@ import 'package:openapi/src/model/feature_config.dart';
 import 'package:openapi/src/model/file_data.dart';
 import 'package:openapi/src/model/file_data_view.dart';
 import 'package:openapi/src/model/filter_operation.dart';
+import 'package:openapi/src/model/fx_status.dart';
 import 'package:openapi/src/model/get_new_refresh_token200_response.dart';
 import 'package:openapi/src/model/get_system_task_command.dart';
 import 'package:openapi/src/model/group.dart';
@@ -180,6 +181,7 @@ part 'serializers.g.dart';
   FileData,
   FileDataView,
   FilterOperation,
+  FxStatus,
   GetNewRefreshToken200Response,
   GetSystemTaskCommand,
   Group,

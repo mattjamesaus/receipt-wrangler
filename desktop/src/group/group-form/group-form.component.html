@@ -28,6 +28,12 @@
         [inputFormControl]="form | formGet : 'status'"
         [options]="groupStatusOptions"
       ></app-select>
+      <app-input
+        label="Base Currency (ISO 4217)"
+        helpText="Three-letter accounting currency used for receipt totals and reports, for example AUD."
+        [readonly]="formConfig.mode | inputReadonly"
+        [inputFormControl]="form | formGet : 'baseCurrencyCode'"
+      ></app-input>
       <app-checkbox
         label="Isolate members"
         helpText="When on, members of this group can't see each other. Members with a role that can see all members remain visible to everyone."

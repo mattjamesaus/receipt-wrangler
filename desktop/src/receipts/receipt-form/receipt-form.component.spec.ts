@@ -89,7 +89,10 @@ describe("ReceiptFormComponent", () => {
 
     expect(component.form.value).toEqual({
       name: "",
-      amount: "",
+      amount: 0,
+      documentAmount: "",
+      documentCurrencyCode: "AUD",
+      fxStatus: "DOMESTIC",
       categories: [],
       tags: [],
       date: mockedDate,

@@ -120,6 +120,10 @@ func (repository ReceiptRepository) UpdateReceipt(id string, command commands.Up
 	// NOTE: ID and field used for afterReceiptUpdated
 	updatedReceipt.ID = currentReceipt.ID
 	updatedReceipt.ResolvedDate = currentReceipt.ResolvedDate
+	if err = prepareReceiptMoney(db, &updatedReceipt, command, &currentReceipt); err != nil {
+		createFailedUpdateSystemTask(systemTask, err)
+		return models.Receipt{}, err
+	}
 	before, err := currentReceipt.ToString()
 	if err != nil {
 		createFailedUpdateSystemTask(systemTask, err)
@@ -338,6 +342,9 @@ func (repository ReceiptRepository) CreateReceipt(
 	notificationRepository := NewNotificationRepository(nil)
 	receipt, err := command.ToReceipt()
 	if err != nil {
+		return models.Receipt{}, err
+	}
+	if err = prepareReceiptMoney(db, &receipt, command, nil); err != nil {
 		return models.Receipt{}, err
 	}
 
@@ -764,6 +771,22 @@ func (repository ReceiptRepository) BuildGormFilterQuery(pagedRequest commands.R
 		}
 	}
 
+	// Document Currency
+	if pagedRequest.Filter.DocumentCurrency.Value != nil {
+		currencyCode := pagedRequest.Filter.DocumentCurrency.Value.(string)
+		if len(currencyCode) > 0 {
+			query = repository.buildFilterQuery(query, currencyCode, pagedRequest.Filter.DocumentCurrency.Operation, "document_currency_code", false)
+		}
+	}
+
+	// FX Status
+	if pagedRequest.Filter.FxStatus.Value != nil {
+		statuses := pagedRequest.Filter.FxStatus.Value.([]interface{})
+		if len(statuses) > 0 {
+			query = repository.buildFilterQuery(query, statuses, pagedRequest.Filter.FxStatus.Operation, "fx_status", true)
+		}
+	}
+
 	// Group
 	if pagedRequest.Filter.Group.Value != nil {
 		groups := pagedRequest.Filter.Group.Value.([]interface{})
@@ -857,7 +880,7 @@ func (repository ReceiptRepository) buildFilterQuery(runningQuery *gorm.DB, valu
 }
 
 func (repository ReceiptRepository) isTrustedValue(pagedRequest commands.ReceiptPagedRequestCommand) bool {
-	orderByTrusted := []interface{}{"date", "name", "paid_by_user_id", "amount", "categories", "tags", "status", "resolved_date", "created_at"}
+	orderByTrusted := []interface{}{"date", "name", "paid_by_user_id", "amount", "document_currency_code", "fx_status", "categories", "tags", "status", "resolved_date", "created_at"}
 	directionTrusted := commands.GetValidSortDirections()
 
 	isOrderByTrusted := utils.Contains(orderByTrusted, pagedRequest.OrderBy)

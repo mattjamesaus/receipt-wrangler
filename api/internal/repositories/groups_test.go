@@ -5,6 +5,9 @@ import (
 	"receipt-wrangler/api/internal/models"
 	"receipt-wrangler/api/internal/utils"
 	"testing"
+	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 func setUpGroupTest() {
@@ -278,6 +281,63 @@ func TestUpdateGroupPersistsIsolateMembersToggle(t *testing.T) {
 	}
 	if !reloaded.IsolateMembers {
 		utils.PrintTestError(t, reloaded.IsolateMembers, true)
+	}
+}
+
+func TestUpdateGroupRejectsBaseCurrencyChangeAfterReceipt(t *testing.T) {
+	defer teardownGroupTest()
+	setUpGroupTest()
+	groupRepository := setupGroupRepository()
+
+	created, err := groupRepository.CreateGroup(commands.UpsertGroupCommand{Name: "currency", BaseCurrencyCode: "AUD"}, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	receipt := models.Receipt{
+		Name: "existing", Amount: decimal.NewFromInt(10), DocumentAmount: decimal.NewFromInt(10),
+		DocumentCurrencyCode: "AUD", FxStatus: models.FX_DOMESTIC, Date: time.Now(),
+		Status: models.OPEN, GroupId: created.ID, PaidByUserID: 1,
+	}
+	if err := GetDB().Create(&receipt).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = groupRepository.UpdateGroup(commands.UpsertGroupCommand{
+		Name: "currency", Status: models.GROUP_ACTIVE, BaseCurrencyCode: "NZD",
+		GroupMembers: []commands.UpsertGroupMemberCommand{{UserID: 1, GroupID: created.ID}},
+	}, utils.UintToString(created.ID))
+	if err == nil {
+		t.Fatal("expected base currency change to be rejected")
+	}
+
+	var reloaded models.Group
+	if err := GetDB().First(&reloaded, created.ID).Error; err != nil {
+		t.Fatal(err)
+	}
+	if reloaded.BaseCurrencyCode != "AUD" {
+		t.Fatalf("base currency = %q, want AUD", reloaded.BaseCurrencyCode)
+	}
+}
+
+func TestUpdateGroupPreservesBaseCurrencyWhenOmitted(t *testing.T) {
+	defer teardownGroupTest()
+	setUpGroupTest()
+	groupRepository := setupGroupRepository()
+
+	created, err := groupRepository.CreateGroup(commands.UpsertGroupCommand{Name: "currency", BaseCurrencyCode: "NZD"}, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	updated, err := groupRepository.UpdateGroup(commands.UpsertGroupCommand{
+		Name: "renamed", Status: models.GROUP_ACTIVE,
+		GroupMembers: []commands.UpsertGroupMemberCommand{{UserID: 1, GroupID: created.ID}},
+	}, utils.UintToString(created.ID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if updated.BaseCurrencyCode != "NZD" {
+		t.Fatalf("base currency = %q, want NZD", updated.BaseCurrencyCode)
 	}
 }
 

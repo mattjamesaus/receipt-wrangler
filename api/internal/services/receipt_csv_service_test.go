@@ -12,23 +12,34 @@ import (
 
 func TestShouldBuildReceiptCsv(t *testing.T) {
 	expected :=
-		"Id,Added At,Receipt Date,Name,Paid By,Amount,Status,Categories,Tags,Resolved Date\n" +
-			"1,2025-01-01,2025-01-01,test,Jim,123.45,OPEN,\"Groceries,Food\",\"Bill,Essential\",2025-01-01\n"
+		"Id,Added At,Receipt Date,Name,Paid By,Amount,Document Currency,Document Amount,Estimated Base Amount,FX Rate,FX Effective Date,FX Provider,FX Retrieved At,FX Status,Status,Categories,Tags,Resolved Date\n" +
+			"1,2025-01-01,2025-01-01,test,Jim,123.45,AUD,123.45,123.45,1,2025-01-01,IDENTITY,2025-01-01T00:00:00Z,DOMESTIC,OPEN,\"Groceries,Food\",\"Bill,Essential\",2025-01-01\n"
 
 	date := time.Date(
 		2025, 1, 1, 0, 0, 0, 0, time.UTC)
 	service := NewReceiptCsvService()
+	estimated := decimal.NewFromFloat(123.45)
+	rate := decimal.NewFromInt(1)
+	provider := "IDENTITY"
 	receipts := []models.Receipt{
 		models.Receipt{
 			BaseModel: models.BaseModel{
 				ID:        1,
 				CreatedAt: date,
 			},
-			Date:       date,
-			Name:       "test",
-			PaidByUser: models.User{DisplayName: "Jim"},
-			Amount:     decimal.NewFromFloat(123.45),
-			Status:     models.OPEN,
+			Date:                 date,
+			Name:                 "test",
+			PaidByUser:           models.User{DisplayName: "Jim"},
+			Amount:               decimal.NewFromFloat(123.45),
+			DocumentCurrencyCode: "AUD",
+			DocumentAmount:       decimal.NewFromFloat(123.45),
+			EstimatedBaseAmount:  &estimated,
+			FxRate:               &rate,
+			FxDate:               &date,
+			FxProvider:           &provider,
+			FxRetrievedAt:        &date,
+			FxStatus:             models.FX_DOMESTIC,
+			Status:               models.OPEN,
 			Categories: []models.Category{
 				models.Category{Name: "Groceries"},
 				models.Category{Name: "Food"},
@@ -88,7 +99,9 @@ func TestBuildReceiptCsvNeutralizesFormulaInjection(t *testing.T) {
 		return
 	}
 
-	// Data row columns: Id, Added At, Receipt Date, Name, Paid By, Amount, Status,
+	// Data row columns: Id, Added At, Receipt Date, Name, Paid By, Amount,
+	// Document Currency, Document Amount, Estimated Base Amount, FX Rate,
+	// FX Effective Date, FX Provider, FX Retrieved At, FX Status, Status,
 	// Categories, Tags, Resolved Date.
 	row := records[1]
 	assertions := []struct {
@@ -97,8 +110,8 @@ func TestBuildReceiptCsvNeutralizesFormulaInjection(t *testing.T) {
 	}{
 		{3, `'=HYPERLINK("http://evil")`}, // Name
 		{4, "'+cmd"},                      // Paid By
-		{7, "'=SUM(A1)"},                  // Categories
-		{8, "'@danger"},                   // Tags
+		{15, "'=SUM(A1)"},                 // Categories
+		{16, "'@danger"},                  // Tags
 	}
 	for _, assertion := range assertions {
 		if row[assertion.column] != assertion.want {

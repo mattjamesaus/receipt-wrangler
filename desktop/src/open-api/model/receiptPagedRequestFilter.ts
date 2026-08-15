@@ -50,5 +50,13 @@ export interface ReceiptPagedRequestFilter {
      * Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
      */
     createdAt?: object;
+    /**
+     * Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+     */
+    documentCurrency?: object;
+    /**
+     * Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+     */
+    fxStatus?: object;
 }
 

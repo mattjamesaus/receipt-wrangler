@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/fx_status.dart';
 import 'package:openapi/src/model/system_email.dart';
 import 'package:openapi/src/model/prompt.dart';
 import 'package:openapi/src/model/custom_field_value.dart';
@@ -40,59 +41,68 @@ part 'paged_data_data_inner.g.dart';
 /// PagedDataDataInner
 ///
 /// Properties:
-/// * [amount] - Receipt total amount
+/// * [amount] - Effective amount in the group's base currency
+/// * [documentAmount] - Original total printed on the receipt evidence
+/// * [documentCurrencyCode] - ISO 4217 currency printed on the receipt evidence
+/// * [estimatedBaseAmount] - Historical-rate estimate in the group's base currency
+/// * [fxRate] - Exact document-to-base exchange rate used for the estimate
+/// * [fxDate] - Effective date returned by the FX provider
+/// * [fxProvider] - Provider used for the historical estimate
+/// * [fxRetrievedAt] - UTC instant at which the rate was retrieved
+/// * [fxStatus]
 /// * [categories] - Categories associated to receipt
 /// * [comments] - Comments associated to receipt
 /// * [customFields] - Custom fields associated to receipt
-/// * [createdAt] 
-/// * [createdBy] 
+/// * [createdAt]
+/// * [createdBy]
 /// * [date] - Receipt date
-/// * [groupId] 
-/// * [id] 
+/// * [groupId]
+/// * [id]
 /// * [imageFiles] - Files associated to receipt
 /// * [name] - The template name (mirrors the saved report's name).
 /// * [paidByUserId] - User paid foreign key
 /// * [receiptItems] - Items associated to receipt
 /// * [resolvedDate] - Date resolved
-/// * [status] 
+/// * [status]
 /// * [tags] - Tags associated to receipt
-/// * [updatedAt] 
+/// * [updatedAt]
 /// * [createdByString] - Created by entity's name
 /// * [description] - Custom Field description
-/// * [prompt] 
-/// * [groupSettings] 
-/// * [groupReceiptSettings] 
+/// * [prompt]
+/// * [groupSettings]
+/// * [groupReceiptSettings]
 /// * [groupMembers] - Members of the group
 /// * [isDefault] - Is default group (not used yet)
 /// * [isAllGroup] - Is all group for user
 /// * [isolateMembers] - Whether member-presence isolation is enabled for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
+/// * [baseCurrencyCode] - ISO 4217 accounting currency used for effective receipt amounts
 /// * [numberOfReceipts] - Number of receipts associated with this tag
-/// * [type] 
-/// * [startedAt] 
-/// * [endedAt] 
-/// * [associatedEntityId] 
-/// * [associatedEntityType] 
-/// * [ranByUserId] 
-/// * [receiptId] 
-/// * [resultDescription] 
-/// * [apiKeyId] 
-/// * [childSystemTasks] 
-/// * [aiType] 
+/// * [type]
+/// * [startedAt]
+/// * [endedAt]
+/// * [associatedEntityId]
+/// * [associatedEntityType]
+/// * [ranByUserId]
+/// * [receiptId]
+/// * [resultDescription]
+/// * [apiKeyId]
+/// * [childSystemTasks]
+/// * [aiType]
 /// * [url] - URL for custom endpoints
 /// * [key] - Key for endpoints that require authentication
 /// * [model] - LLM model
 /// * [isVisionModel] - Is vision model
 /// * [enforceJsonResponseFormat] - Enforce JSON response format on the LLM provider. Disable if the provider does not support this flag.
-/// * [ocrEngine] 
+/// * [ocrEngine]
 /// * [promptId] - Prompt foreign key
 /// * [host] - IMAP host
 /// * [port] - IMAP port
 /// * [username] - User's username used to login
 /// * [password] - IMAP password
 /// * [useStartTLS] - Whether to use STARTTLS
-/// * [canBeRestarted] 
-/// * [options] 
-/// * [configuration] 
+/// * [canBeRestarted]
+/// * [options]
+/// * [configuration]
 /// * [configurationVersion] - Schema version the stored configuration was written under.
 /// * [allowedActions] - The actions the requesting user may perform on this template (read, generate, update, delete, duplicate), resolved per user and populated only on the list response. Drives the row action buttons.
 /// * [defaultAvatarColor] - Default avatar color

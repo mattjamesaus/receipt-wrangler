@@ -32,6 +32,10 @@ export interface UpsertGroupCommand {
      * Whether to enable member-presence isolation for the group. When on, members cannot discover other members unless they hold a group role flagged seesAllMembers. Defaults to false.
      */
     isolateMembers?: boolean;
+    /**
+     * ISO 4217 accounting currency; defaults to AUD when omitted
+     */
+    baseCurrencyCode?: string;
     status: GroupStatus;
 }
 export namespace UpsertGroupCommand {

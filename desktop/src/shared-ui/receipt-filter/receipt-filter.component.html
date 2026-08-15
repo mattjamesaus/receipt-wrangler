@@ -19,6 +19,29 @@
     <ng-template
       [ngTemplateOutlet]="filterField"
       [ngTemplateOutletContext]="{
+        label: 'Document Currency',
+        fieldName: 'documentCurrency',
+        type: 'text'
+      }"
+    ></ng-template>
+
+    <ng-template
+      [ngTemplateOutlet]="filterField"
+      [ngTemplateOutletContext]="{
+        label: 'FX Status',
+        fieldName: 'fxStatus',
+        type: 'list',
+        options: fxStatusOptions,
+        optionFilterKey: 'value',
+        optionValueKey: 'value',
+        optionDisplayKey: 'displayValue',
+        multiple: true
+      }"
+    ></ng-template>
+
+    <ng-template
+      [ngTemplateOutlet]="filterField"
+      [ngTemplateOutletContext]="{
         label: 'Name',
         fieldName: 'name',
         type: 'text'

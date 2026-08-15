@@ -133,7 +133,10 @@ class _ReceiptBottomNav extends State<ReceiptBottomNav> {
     var modifiedReceipt = (api.ReceiptBuilder()
           ..id = receiptModel.receipt.id
           ..name = form["name"] ?? ""
-          ..amount = form["amount"] ?? "0"
+          ..amount = form["amount"] ?? receiptModel.modifiedReceipt.amount
+          ..documentAmount = form["documentAmount"] ?? receiptModel.modifiedReceipt.documentAmount
+          ..documentCurrencyCode = form["documentCurrencyCode"] ?? receiptModel.modifiedReceipt.documentCurrencyCode
+          ..fxStatus = form["fxStatus"] ?? receiptModel.modifiedReceipt.fxStatus
           ..date = date
           ..groupId = int.parse((form["groupId"] ?? "0").toString())
           ..paidByUserId = int.parse((form["paidByUserId"] ?? "0").toString())

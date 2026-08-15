@@ -7,6 +7,7 @@ import (
 	"receipt-wrangler/api/internal/structs"
 	"receipt-wrangler/api/internal/utils"
 	"strings"
+	"time"
 )
 
 type ReceiptCsvService struct {
@@ -32,6 +33,14 @@ func (service *ReceiptCsvService) BuildReceiptCsv(receipts []models.Receipt) (st
 		"Name",
 		"Paid By",
 		"Amount",
+		"Document Currency",
+		"Document Amount",
+		"Estimated Base Amount",
+		"FX Rate",
+		"FX Effective Date",
+		"FX Provider",
+		"FX Retrieved At",
+		"FX Status",
 		"Status",
 		"Categories",
 		"Tags",
@@ -49,6 +58,26 @@ func (service *ReceiptCsvService) BuildReceiptCsv(receipts []models.Receipt) (st
 		for _, item := range receipt.ReceiptItems {
 			items = append(items, item)
 		}
+		estimatedBaseAmount := ""
+		if receipt.EstimatedBaseAmount != nil {
+			estimatedBaseAmount = receipt.EstimatedBaseAmount.String()
+		}
+		fxRate := ""
+		if receipt.FxRate != nil {
+			fxRate = receipt.FxRate.String()
+		}
+		fxDate := ""
+		if receipt.FxDate != nil {
+			fxDate = receipt.FxDate.Format(dateFormat)
+		}
+		fxProvider := ""
+		if receipt.FxProvider != nil {
+			fxProvider = *receipt.FxProvider
+		}
+		fxRetrievedAt := ""
+		if receipt.FxRetrievedAt != nil {
+			fxRetrievedAt = receipt.FxRetrievedAt.UTC().Format(time.RFC3339)
+		}
 		newRow := []string{
 			utils.UintToString(receipt.ID),
 			receipt.CreatedAt.Format(dateFormat),
@@ -56,6 +85,14 @@ func (service *ReceiptCsvService) BuildReceiptCsv(receipts []models.Receipt) (st
 			render.SanitizeCSVField(receipt.Name),
 			render.SanitizeCSVField(receipt.PaidByUser.DisplayName),
 			receipt.Amount.String(),
+			receipt.DocumentCurrencyCode,
+			receipt.DocumentAmount.String(),
+			estimatedBaseAmount,
+			fxRate,
+			fxDate,
+			render.SanitizeCSVField(fxProvider),
+			fxRetrievedAt,
+			string(receipt.FxStatus),
 			string(receipt.Status),
 			render.SanitizeCSVField(service.BuildCategoryString(receipt.Categories)),
 			render.SanitizeCSVField(service.BuildTagString(receipt.Tags)),

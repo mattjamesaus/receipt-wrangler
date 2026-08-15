@@ -64,6 +64,17 @@ export function buildReceiptFilterForm(filter: any, thisContext: any): FormGroup
       thisContext,
       filter?.createdAt?.operation === FilterOperation.Between
     ),
+    documentCurrency: buildFieldFormGroup(
+      filter?.documentCurrency?.value,
+      filter?.documentCurrency?.operation,
+      thisContext
+    ),
+    fxStatus: buildFieldFormGroup(
+      filter?.fxStatus?.value ?? [],
+      filter?.fxStatus?.operation,
+      thisContext,
+      true
+    ),
   });
 
   listenForBetweenOperation(formGroup, "amount", thisContext);

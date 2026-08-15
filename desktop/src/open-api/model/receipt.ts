@@ -11,6 +11,7 @@ import { CustomFieldValue } from './customFieldValue';
 import { Comment } from './comment';
 import { Item } from './item';
 import { Category } from './category';
+import { FxStatus } from './fxStatus';
 import { ReceiptStatus } from './receiptStatus';
 import { Tag } from './tag';
 import { FileData } from './fileData';
@@ -21,9 +22,38 @@ import { FileData } from './fileData';
  */
 export interface Receipt { 
     /**
-     * Receipt total amount
+     * Effective amount in the group\'s base currency
      */
     amount: string;
+    /**
+     * Original total printed on the receipt evidence
+     */
+    documentAmount: string;
+    /**
+     * ISO 4217 currency printed on the receipt evidence
+     */
+    documentCurrencyCode: string;
+    /**
+     * Historical-rate estimate in the group\'s base currency
+     */
+    estimatedBaseAmount?: string;
+    /**
+     * Exact document-to-base exchange rate used for the estimate
+     */
+    fxRate?: string;
+    /**
+     * Effective date returned by the FX provider
+     */
+    fxDate?: string;
+    /**
+     * Provider used for the historical estimate
+     */
+    fxProvider?: string;
+    /**
+     * UTC instant at which the rate was retrieved
+     */
+    fxRetrievedAt?: string;
+    fxStatus: FxStatus;
     /**
      * Categories associated to receipt
      */

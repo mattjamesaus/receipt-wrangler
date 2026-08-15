@@ -108,6 +108,37 @@ func TestUpsertGroupCommand_Validate_GroupMembersNotRequiredOnCreate(t *testing.
 	}
 }
 
+func TestUpsertGroupCommand_Validate_NormalizesBaseCurrency(t *testing.T) {
+	command := UpsertGroupCommand{Name: "Test Group", Status: models.GROUP_ACTIVE, BaseCurrencyCode: " usd "}
+
+	vErr := command.Validate(true)
+
+	if len(vErr.Errors) != 0 || command.BaseCurrencyCode != "USD" {
+		t.Fatalf("currency = %q, errors = %#v", command.BaseCurrencyCode, vErr.Errors)
+	}
+}
+
+func TestUpsertGroupCommand_Validate_RejectsInvalidBaseCurrency(t *testing.T) {
+	command := UpsertGroupCommand{Name: "Test Group", Status: models.GROUP_ACTIVE, BaseCurrencyCode: "ZZZ"}
+
+	if _, exists := command.Validate(true).Errors["baseCurrencyCode"]; !exists {
+		t.Fatal("expected invalid ISO 4217 base currency error")
+	}
+}
+
+func TestUpsertGroupCommand_Validate_AllowsOmittedBaseCurrencyOnUpdate(t *testing.T) {
+	command := UpsertGroupCommand{
+		Name: "Test Group", Status: models.GROUP_ACTIVE,
+		GroupMembers: []UpsertGroupMemberCommand{{UserID: 1}},
+	}
+
+	vErr := command.Validate(false)
+
+	if len(vErr.Errors) != 0 || command.BaseCurrencyCode != "" {
+		t.Fatalf("currency = %q, errors = %#v", command.BaseCurrencyCode, vErr.Errors)
+	}
+}
+
 func TestUpsertGroupCommand_Validate_MultipleErrors(t *testing.T) {
 	command := UpsertGroupCommand{}
 
