@@ -25,17 +25,25 @@ import (
 // The built-in fields a report may reference. Keys are plain identifiers so a
 // formula can name one without quoting, as in SUM(amount).
 const (
-	KeyReceiptID    reporting.FieldKey = "receipt_id"
-	KeyName         reporting.FieldKey = "name"
-	KeyAmount       reporting.FieldKey = "amount"
-	KeyDate         reporting.FieldKey = "date"
-	KeyResolvedDate reporting.FieldKey = "resolved_date"
-	KeyCreatedAt    reporting.FieldKey = "created_at"
-	KeyStatus       reporting.FieldKey = "status"
-	KeyPaidBy       reporting.FieldKey = "paid_by"
-	KeyGroup        reporting.FieldKey = "group"
-	KeyCategory     reporting.FieldKey = "category"
-	KeyTag          reporting.FieldKey = "tag"
+	KeyReceiptID           reporting.FieldKey = "receipt_id"
+	KeyName                reporting.FieldKey = "name"
+	KeyAmount              reporting.FieldKey = "amount"
+	KeyDocumentAmount      reporting.FieldKey = "document_amount"
+	KeyDocumentCurrency    reporting.FieldKey = "document_currency_code"
+	KeyEstimatedBaseAmount reporting.FieldKey = "estimated_base_amount"
+	KeyFxRate              reporting.FieldKey = "fx_rate"
+	KeyFxDate              reporting.FieldKey = "fx_date"
+	KeyFxProvider          reporting.FieldKey = "fx_provider"
+	KeyFxRetrievedAt       reporting.FieldKey = "fx_retrieved_at"
+	KeyFxStatus            reporting.FieldKey = "fx_status"
+	KeyDate                reporting.FieldKey = "date"
+	KeyResolvedDate        reporting.FieldKey = "resolved_date"
+	KeyCreatedAt           reporting.FieldKey = "created_at"
+	KeyStatus              reporting.FieldKey = "status"
+	KeyPaidBy              reporting.FieldKey = "paid_by"
+	KeyGroup               reporting.FieldKey = "group"
+	KeyCategory            reporting.FieldKey = "category"
+	KeyTag                 reporting.FieldKey = "tag"
 
 	// Derived date-period fields. A report groups by one of these to bucket
 	// receipts by calendar day, month, or year; the raw date fields above carry
@@ -72,6 +80,14 @@ func builtinFields() []reporting.FieldRef {
 		{Key: KeyReceiptID, Label: "Receipt Id", DataType: reporting.TypeNumber},
 		{Key: KeyName, Label: "Name", DataType: reporting.TypeString},
 		{Key: KeyAmount, Label: "Amount", DataType: reporting.TypeCurrency},
+		{Key: KeyDocumentAmount, Label: "Document Amount", DataType: reporting.TypeNumber},
+		{Key: KeyDocumentCurrency, Label: "Document Currency", DataType: reporting.TypeString},
+		{Key: KeyEstimatedBaseAmount, Label: "Estimated Base Amount", DataType: reporting.TypeCurrency},
+		{Key: KeyFxRate, Label: "FX Rate", DataType: reporting.TypeNumber},
+		{Key: KeyFxDate, Label: "FX Effective Date", DataType: reporting.TypeDate},
+		{Key: KeyFxProvider, Label: "FX Provider", DataType: reporting.TypeString},
+		{Key: KeyFxRetrievedAt, Label: "FX Retrieved At", DataType: reporting.TypeDate},
+		{Key: KeyFxStatus, Label: "FX Status", DataType: reporting.TypeString},
 		{Key: KeyDate, Label: "Date", DataType: reporting.TypeDate},
 		{Key: KeyResolvedDate, Label: "Resolved Date", DataType: reporting.TypeDate},
 		{Key: KeyCreatedAt, Label: "Added At", DataType: reporting.TypeDate},
@@ -200,14 +216,32 @@ func (s Source) Rows(receipts []models.Receipt) []reporting.Row {
 
 func (s Source) row(receipt *models.Receipt) reporting.Row {
 	row := reporting.Row{
-		KeyReceiptID: {reporting.Num(decimal.NewFromInt(int64(receipt.ID)))},
-		KeyName:      {reporting.Str(receipt.Name)},
-		KeyAmount:    {reporting.Num(receipt.Amount)},
-		KeyDate:      {reporting.DateVal(receipt.Date)},
-		KeyCreatedAt: {reporting.DateVal(receipt.CreatedAt)},
-		KeyStatus:    {reporting.Str(string(receipt.Status))},
-		KeyCategory:  categoryValues(receipt.Categories),
-		KeyTag:       tagValues(receipt.Tags),
+		KeyReceiptID:        {reporting.Num(decimal.NewFromInt(int64(receipt.ID)))},
+		KeyName:             {reporting.Str(receipt.Name)},
+		KeyAmount:           {reporting.Num(receipt.Amount)},
+		KeyDocumentAmount:   {reporting.Num(receipt.DocumentAmount)},
+		KeyDocumentCurrency: {reporting.Str(receipt.DocumentCurrencyCode)},
+		KeyFxStatus:         {reporting.Str(string(receipt.FxStatus))},
+		KeyDate:             {reporting.DateVal(receipt.Date)},
+		KeyCreatedAt:        {reporting.DateVal(receipt.CreatedAt)},
+		KeyStatus:           {reporting.Str(string(receipt.Status))},
+		KeyCategory:         categoryValues(receipt.Categories),
+		KeyTag:              tagValues(receipt.Tags),
+	}
+	if receipt.EstimatedBaseAmount != nil {
+		row[KeyEstimatedBaseAmount] = []reporting.Value{reporting.Num(*receipt.EstimatedBaseAmount)}
+	}
+	if receipt.FxRate != nil {
+		row[KeyFxRate] = []reporting.Value{reporting.Num(*receipt.FxRate)}
+	}
+	if receipt.FxDate != nil {
+		row[KeyFxDate] = []reporting.Value{reporting.DateVal(*receipt.FxDate)}
+	}
+	if receipt.FxProvider != nil {
+		row[KeyFxProvider] = []reporting.Value{reporting.Str(*receipt.FxProvider)}
+	}
+	if receipt.FxRetrievedAt != nil {
+		row[KeyFxRetrievedAt] = []reporting.Value{reporting.DateVal(*receipt.FxRetrievedAt)}
 	}
 
 	setDateParts(row, KeyDateDay, KeyDateMonth, KeyDateYear, receipt.Date)

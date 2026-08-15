@@ -112,14 +112,14 @@ func initReceiptFilterValues(filter *ReceiptPagedRequestFilter) {
 		filter.Amount.Value = float64(0)
 	}
 	for _, field := range []*PagedRequestField{
-		&filter.PaidBy, &filter.Categories, &filter.Tags, &filter.Status, &filter.Group,
+		&filter.PaidBy, &filter.Categories, &filter.Tags, &filter.Status, &filter.Group, &filter.FxStatus,
 	} {
 		if field.Value == nil || field.Value == "" {
 			field.Value = make([]interface{}, 0)
 		}
 	}
 	for _, field := range []*PagedRequestField{
-		&filter.Date, &filter.ResolvedDate, &filter.CreatedAt, &filter.Name,
+		&filter.Date, &filter.ResolvedDate, &filter.CreatedAt, &filter.Name, &filter.DocumentCurrency,
 	} {
 		if field.Value == nil {
 			field.Value = ""
@@ -128,16 +128,18 @@ func initReceiptFilterValues(filter *ReceiptPagedRequestFilter) {
 }
 
 type ReceiptPagedRequestFilter struct {
-	Date         PagedRequestField `json:"date"`
-	Amount       PagedRequestField `json:"amount"`
-	Name         PagedRequestField `json:"name"`
-	PaidBy       PagedRequestField `json:"paidBy"`
-	Categories   PagedRequestField `json:"categories"`
-	Tags         PagedRequestField `json:"tags"`
-	Status       PagedRequestField `json:"status"`
-	Group        PagedRequestField `json:"group"`
-	ResolvedDate PagedRequestField `json:"resolvedDate"`
-	CreatedAt    PagedRequestField `json:"createdAt"`
+	Date             PagedRequestField `json:"date"`
+	Amount           PagedRequestField `json:"amount"`
+	Name             PagedRequestField `json:"name"`
+	PaidBy           PagedRequestField `json:"paidBy"`
+	Categories       PagedRequestField `json:"categories"`
+	Tags             PagedRequestField `json:"tags"`
+	Status           PagedRequestField `json:"status"`
+	Group            PagedRequestField `json:"group"`
+	ResolvedDate     PagedRequestField `json:"resolvedDate"`
+	CreatedAt        PagedRequestField `json:"createdAt"`
+	DocumentCurrency PagedRequestField `json:"documentCurrency"`
+	FxStatus         PagedRequestField `json:"fxStatus"`
 }
 
 type PagedRequestField struct {

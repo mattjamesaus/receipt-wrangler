@@ -7,6 +7,8 @@ import (
 	"receipt-wrangler/api/internal/utils"
 	"testing"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 // The legacy user_role column was removed from the User model, so AutoMigrate no longer
@@ -386,6 +388,53 @@ func TestRunDataMigrationsRollsBackOnFailure(t *testing.T) {
 	// And no partial assignment persisted.
 	if reloadUser(t, admin.ID).AppRoleID != nil {
 		utils.PrintTestError(t, reloadUser(t, admin.ID).AppRoleID, nil)
+	}
+}
+
+func TestBackfillReceiptCurrency(t *testing.T) {
+	defer TruncateTestDb()
+	db := GetDB()
+
+	group := models.Group{Name: "legacy", BaseCurrencyCode: ""}
+	if err := db.Create(&group).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Model(&group).UpdateColumn("base_currency_code", "").Error; err != nil {
+		t.Fatal(err)
+	}
+	user := models.User{Username: "legacy-user", Password: "password"}
+	if err := db.Create(&user).Error; err != nil {
+		t.Fatal(err)
+	}
+	receipt := models.Receipt{
+		Name: "legacy receipt", Amount: decimal.RequireFromString("12.34"),
+		Date: time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC), GroupId: group.ID, PaidByUserID: user.ID,
+	}
+	if err := db.Omit("DocumentCurrencyCode", "DocumentAmount", "FxStatus").Create(&receipt).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	if err := backfillReceiptCurrency(db); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.First(&group, group.ID).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.First(&receipt, receipt.ID).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	if group.BaseCurrencyCode != "AUD" {
+		t.Errorf("base currency = %q, want AUD", group.BaseCurrencyCode)
+	}
+	if receipt.DocumentCurrencyCode != "AUD" || !receipt.DocumentAmount.Equal(receipt.Amount) {
+		t.Errorf("document money = %s %s, want AUD %s", receipt.DocumentCurrencyCode, receipt.DocumentAmount, receipt.Amount)
+	}
+	if receipt.EstimatedBaseAmount == nil || !receipt.EstimatedBaseAmount.Equal(receipt.Amount) {
+		t.Errorf("estimated base amount = %v, want %s", receipt.EstimatedBaseAmount, receipt.Amount)
+	}
+	if receipt.FxStatus != models.FX_DOMESTIC {
+		t.Errorf("FX status = %s, want DOMESTIC", receipt.FxStatus)
 	}
 }
 

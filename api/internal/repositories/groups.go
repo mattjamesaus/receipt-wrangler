@@ -6,6 +6,7 @@ import (
 	"receipt-wrangler/api/internal/commands"
 	"receipt-wrangler/api/internal/models"
 	"receipt-wrangler/api/internal/utils"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -88,6 +89,7 @@ func buildGroupMemberFromCommand(command commands.UpsertGroupMemberCommand) mode
 }
 
 func (repository GroupRepository) CreateGroup(command commands.UpsertGroupCommand, userId uint) (models.Group, error) {
+	command.BaseCurrencyCode = normalizedBaseCurrency(command.BaseCurrencyCode)
 	// TODO: move hooks on delete to repository func
 	db := repository.GetDB()
 	var returnGroup models.Group
@@ -97,6 +99,7 @@ func (repository GroupRepository) CreateGroup(command commands.UpsertGroupComman
 	groupToCreate.Status = command.Status
 	groupToCreate.IsAllGroup = command.IsAllGroup
 	groupToCreate.IsolateMembers = command.IsolateMembers
+	groupToCreate.BaseCurrencyCode = command.BaseCurrencyCode
 	for i := 0; i < len(command.GroupMembers); i++ {
 		groupMember := buildGroupMemberFromCommand(command.GroupMembers[i])
 		groupToCreate.GroupMembers = append(groupToCreate.GroupMembers, groupMember)
@@ -169,6 +172,7 @@ func (repository GroupRepository) CreateGroup(command commands.UpsertGroupComman
 func (repository GroupRepository) UpdateGroup(command commands.UpsertGroupCommand, groupId string) (models.Group, error) {
 	// TODO: move hooks from model to repository func
 	db := repository.GetDB()
+	requestedBaseCurrency := strings.ToUpper(strings.TrimSpace(command.BaseCurrencyCode))
 
 	uintId, err := utils.StringToUint(groupId)
 	if err != nil {
@@ -191,6 +195,23 @@ func (repository GroupRepository) UpdateGroup(command commands.UpsertGroupComman
 	}
 
 	err = db.Transaction(func(tx *gorm.DB) error {
+		var currentGroup models.Group
+		if txErr := tx.Select("id", "base_currency_code").First(&currentGroup, uintId).Error; txErr != nil {
+			return txErr
+		}
+		if requestedBaseCurrency == "" {
+			requestedBaseCurrency = normalizedBaseCurrency(currentGroup.BaseCurrencyCode)
+		}
+		if normalizedBaseCurrency(currentGroup.BaseCurrencyCode) != requestedBaseCurrency {
+			var receiptCount int64
+			if txErr := tx.Model(&models.Receipt{}).Where("group_id = ?", uintId).Count(&receiptCount).Error; txErr != nil {
+				return txErr
+			}
+			if receiptCount > 0 {
+				return errors.New("base currency cannot be changed after receipts have been added")
+			}
+		}
+
 		// Read the members' grant restriction flags FIRST, before anything writes the
 		// roster. Both the FullSaveAssociations Updates below and the association
 		// Replace further down persist GroupMember rows rebuilt from the request
@@ -221,6 +242,11 @@ func (repository GroupRepository) UpdateGroup(command commands.UpsertGroupComman
 			return txErr
 		}
 
+		txErr = tx.Model(&models.Group{}).Where("id = ?", uintId).Update("base_currency_code", requestedBaseCurrency).Error
+		if txErr != nil {
+			return txErr
+		}
+
 		txErr = tx.Model(&groupToUpdate).Association("GroupMembers").Unscoped().Replace(groupToUpdate.GroupMembers)
 		if txErr != nil {
 			return txErr
@@ -247,6 +273,14 @@ func (repository GroupRepository) UpdateGroup(command commands.UpsertGroupComman
 	}
 
 	return returnGroup, nil
+}
+
+func normalizedBaseCurrency(value string) string {
+	value = strings.ToUpper(strings.TrimSpace(value))
+	if value == "" {
+		return defaultBaseCurrencyCode
+	}
+	return value
 }
 
 func (repository GroupRepository) GetGroupById(id string,

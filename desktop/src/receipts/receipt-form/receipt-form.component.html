@@ -38,10 +38,10 @@
             <div class="d-flex align-items-center w-100">
               <app-input
                 class="w-100"
-                label="Amount"
+                label="Document Amount"
                 type="text"
                 [isCurrency]="true"
-                [inputFormControl]="form | formGet : 'amount'"
+                [inputFormControl]="form | formGet : 'documentAmount'"
                 [readonly]="(mode | inputReadonly) || syncAmountWithItems"
               ></app-input>
               @if (!(mode | inputReadonly)) {
@@ -51,6 +51,48 @@
                 ></app-checkbox>
               }
             </div>
+            <app-input
+              class="w-100"
+              label="Document Currency (ISO 4217)"
+              [inputFormControl]="form | formGet : 'documentCurrencyCode'"
+              [readonly]="mode | inputReadonly"
+            ></app-input>
+            @if (originalReceipt && originalReceipt.fxStatus !== FxStatus.Domestic) {
+              <div class="w-100 mb-3">
+                {{ originalReceipt.documentCurrencyCode }} {{ originalReceipt.documentAmount | number:'1.2-4' }}
+                →
+                @if (originalReceipt.fxStatus === FxStatus.NeedsReview) {
+                  FX estimate needs review
+                } @else {
+                  {{ originalReceipt.fxStatus === FxStatus.Confirmed ? 'confirmed' : 'estimated' }}
+                  {{ originalReceipt.amount | customCurrency }}
+                }
+                <small class="d-block text-muted">FX status: {{ originalReceipt.fxStatus }}</small>
+                @if (originalReceipt.fxProvider) {
+                  <small class="d-block text-muted">
+                    Rate {{ originalReceipt.fxRate }} from {{ originalReceipt.fxProvider }}
+                    @if (originalReceipt.fxDate) { (effective {{ originalReceipt.fxDate | date }}) }
+                  </small>
+                }
+              </div>
+              <app-input
+                class="w-100"
+                label="Effective Base Amount"
+                type="text"
+                [isCurrency]="true"
+                [inputFormControl]="form | formGet : 'amount'"
+                [readonly]="mode | inputReadonly"
+              ></app-input>
+              <app-select
+                class="w-100"
+                label="FX Status"
+                optionValueKey="value"
+                optionDisplayKey="displayValue"
+                [inputFormControl]="form | formGet : 'fxStatus'"
+                [readonly]="mode | inputReadonly"
+                [options]="fxStatusOptions"
+              ></app-select>
+            }
             @if (!this.selectedGroup()?.groupReceiptSettings?.hideReceiptCategories) {
               <app-category-autocomplete
                 class="w-100"
@@ -268,7 +310,7 @@
     cdkDragRootElement=".cdk-overlay-pane"
     [originalReceipt]="originalReceipt"
     [usersToOmit]="usersToOmit()"
-    [amountToSplit]="form.get('amount')?.value || 0"
+    [amountToSplit]="form.get('documentAmount')?.value || 0"
     (itemsToAdd)="onQuickActionItemsAdded($event)"
   ></app-quick-actions-dialog>
 </ng-template>

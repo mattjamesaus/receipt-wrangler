@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FxStatus } from './fxStatus';
 import { UpsertCategoryCommand } from './upsertCategoryCommand';
 import { UpsertCustomFieldValueCommand } from './upsertCustomFieldValueCommand';
 import { UpsertItemCommand } from './upsertItemCommand';
@@ -21,9 +22,18 @@ export interface UpsertReceiptCommand {
      */
     name: string;
     /**
-     * Receipt total amount
+     * Effective base-currency amount; required for compatibility and confirmed FX values
      */
     amount: string;
+    /**
+     * Original total printed on the receipt; defaults to amount when omitted
+     */
+    documentAmount?: string;
+    /**
+     * ISO 4217 currency printed on the receipt; defaults to the group base currency
+     */
+    documentCurrencyCode?: string;
+    fxStatus?: FxStatus;
     /**
      * Receipt date
      */

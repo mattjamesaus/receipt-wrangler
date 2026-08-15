@@ -120,6 +120,14 @@ func TestSource_CatalogBuiltins(t *testing.T) {
 		{KeyReceiptID, reporting.TypeNumber, false},
 		{KeyName, reporting.TypeString, false},
 		{KeyAmount, reporting.TypeCurrency, false},
+		{KeyDocumentAmount, reporting.TypeNumber, false},
+		{KeyDocumentCurrency, reporting.TypeString, false},
+		{KeyEstimatedBaseAmount, reporting.TypeCurrency, false},
+		{KeyFxRate, reporting.TypeNumber, false},
+		{KeyFxDate, reporting.TypeDate, false},
+		{KeyFxProvider, reporting.TypeString, false},
+		{KeyFxRetrievedAt, reporting.TypeDate, false},
+		{KeyFxStatus, reporting.TypeString, false},
 		{KeyDate, reporting.TypeDate, false},
 		{KeyResolvedDate, reporting.TypeDate, false},
 		{KeyCreatedAt, reporting.TypeDate, false},
@@ -371,18 +379,31 @@ func fullReceipt() models.Receipt {
 	option := uint(11)
 	due := time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
 	reimbursed := true
+	estimated := dec("120.00")
+	rate := dec("1.5000")
+	fxDate := time.Date(2026, 5, 14, 0, 0, 0, 0, time.UTC)
+	fxProvider := "Frankfurter:ECB"
+	fxRetrievedAt := time.Date(2026, 5, 15, 1, 2, 3, 0, time.UTC)
 
 	return models.Receipt{
-		BaseModel:    models.BaseModel{ID: 7, CreatedAt: time.Date(2026, 5, 1, 8, 0, 0, 0, time.UTC)},
-		Name:         "Staples",
-		Amount:       dec("120.00"),
-		Date:         time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC),
-		ResolvedDate: &resolved,
-		Status:       models.RESOLVED,
-		PaidByUser:   models.User{DisplayName: "Dana"},
-		Group:        models.Group{Name: "Household"},
-		Categories:   []models.Category{{Name: "Clothing"}, {Name: "Medical"}},
-		Tags:         []models.Tag{{Name: "Alex"}},
+		BaseModel:            models.BaseModel{ID: 7, CreatedAt: time.Date(2026, 5, 1, 8, 0, 0, 0, time.UTC)},
+		Name:                 "Staples",
+		Amount:               dec("120.00"),
+		DocumentAmount:       dec("80.00"),
+		DocumentCurrencyCode: "USD",
+		EstimatedBaseAmount:  &estimated,
+		FxRate:               &rate,
+		FxDate:               &fxDate,
+		FxProvider:           &fxProvider,
+		FxRetrievedAt:        &fxRetrievedAt,
+		FxStatus:             models.FX_ESTIMATED,
+		Date:                 time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC),
+		ResolvedDate:         &resolved,
+		Status:               models.RESOLVED,
+		PaidByUser:           models.User{DisplayName: "Dana"},
+		Group:                models.Group{Name: "Household"},
+		Categories:           []models.Category{{Name: "Clothing"}, {Name: "Medical"}},
+		Tags:                 []models.Tag{{Name: "Alex"}},
 		CustomFields: []models.CustomFieldValue{
 			{CustomFieldId: hstFieldID, CurrencyValue: &hst},
 			{CustomFieldId: noteFieldID, StringValue: &note},
@@ -414,6 +435,22 @@ func TestSource_RowsResolvesEveryField(t *testing.T) {
 		}
 	})
 
+	for _, test := range []struct {
+		key  reporting.FieldKey
+		want string
+	}{
+		{KeyDocumentAmount, "80.00"},
+		{KeyEstimatedBaseAmount, "120.00"},
+		{KeyFxRate, "1.5000"},
+	} {
+		t.Run(string(test.key), func(t *testing.T) {
+			number, isNumber := row.Measure(test.key).Decimal()
+			if !isNumber || !number.Equal(dec(test.want)) {
+				t.Errorf("%s = %v, want %s", test.key, row.Measure(test.key), test.want)
+			}
+		})
+	}
+
 	t.Run("currency custom field", func(t *testing.T) {
 		number, isNumber := row.Measure("custom_1").Decimal()
 		if !isNumber || !number.Equal(dec("15.60")) {
@@ -426,6 +463,9 @@ func TestSource_RowsResolvesEveryField(t *testing.T) {
 		want string
 	}{
 		{KeyName, "Staples"},
+		{KeyDocumentCurrency, "USD"},
+		{KeyFxProvider, "Frankfurter:ECB"},
+		{KeyFxStatus, "ESTIMATED"},
 		{KeyStatus, "RESOLVED"},
 		{KeyPaidBy, "Dana"},
 		{KeyGroup, "Household"},
@@ -450,6 +490,8 @@ func TestSource_RowsResolvesEveryField(t *testing.T) {
 		{KeyDate, time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC)},
 		{KeyResolvedDate, time.Date(2026, 5, 20, 0, 0, 0, 0, time.UTC)},
 		{KeyCreatedAt, time.Date(2026, 5, 1, 8, 0, 0, 0, time.UTC)},
+		{KeyFxDate, time.Date(2026, 5, 14, 0, 0, 0, 0, time.UTC)},
+		{KeyFxRetrievedAt, time.Date(2026, 5, 15, 1, 2, 3, 0, time.UTC)},
 		{"custom_4", time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)},
 	}
 	for _, test := range dates {

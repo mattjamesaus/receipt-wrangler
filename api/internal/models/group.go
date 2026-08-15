@@ -15,6 +15,9 @@ type Group struct {
 	GroupReceiptSettings GroupReceiptSettings `json:"groupReceiptSettings"`
 	Status               GroupStatus          `gorm:"default:'ACTIVE'; not null" json:"status"`
 	IsAllGroup           bool                 `json:"isAllGroup" gorm:"default:false"`
+	// BaseCurrencyCode is accounting data for this group. It is intentionally
+	// independent of the global display-symbol preference.
+	BaseCurrencyCode string `json:"baseCurrencyCode" gorm:"type:char(3);not null;default:'AUD'"`
 
 	// IsolateMembers turns on member-presence isolation for this group: members
 	// cannot discover that other members exist (through the user directory, group

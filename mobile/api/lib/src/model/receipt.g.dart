@@ -10,6 +10,22 @@ class _$Receipt extends Receipt {
   @override
   final String amount;
   @override
+  final String documentAmount;
+  @override
+  final String documentCurrencyCode;
+  @override
+  final String? estimatedBaseAmount;
+  @override
+  final String? fxRate;
+  @override
+  final DateTime? fxDate;
+  @override
+  final String? fxProvider;
+  @override
+  final DateTime? fxRetrievedAt;
+  @override
+  final FxStatus fxStatus;
+  @override
   final BuiltList<Category> categories;
   @override
   final BuiltList<Comment> comments;
@@ -49,6 +65,14 @@ class _$Receipt extends Receipt {
 
   _$Receipt._(
       {required this.amount,
+      required this.documentAmount,
+      required this.documentCurrencyCode,
+      this.estimatedBaseAmount,
+      this.fxRate,
+      this.fxDate,
+      this.fxProvider,
+      this.fxRetrievedAt,
+      required this.fxStatus,
       required this.categories,
       required this.comments,
       required this.customFields,
@@ -79,6 +103,14 @@ class _$Receipt extends Receipt {
     if (identical(other, this)) return true;
     return other is Receipt &&
         amount == other.amount &&
+        documentAmount == other.documentAmount &&
+        documentCurrencyCode == other.documentCurrencyCode &&
+        estimatedBaseAmount == other.estimatedBaseAmount &&
+        fxRate == other.fxRate &&
+        fxDate == other.fxDate &&
+        fxProvider == other.fxProvider &&
+        fxRetrievedAt == other.fxRetrievedAt &&
+        fxStatus == other.fxStatus &&
         categories == other.categories &&
         comments == other.comments &&
         customFields == other.customFields &&
@@ -102,6 +134,14 @@ class _$Receipt extends Receipt {
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, amount.hashCode);
+    _$hash = $jc(_$hash, documentAmount.hashCode);
+    _$hash = $jc(_$hash, documentCurrencyCode.hashCode);
+    _$hash = $jc(_$hash, estimatedBaseAmount.hashCode);
+    _$hash = $jc(_$hash, fxRate.hashCode);
+    _$hash = $jc(_$hash, fxDate.hashCode);
+    _$hash = $jc(_$hash, fxProvider.hashCode);
+    _$hash = $jc(_$hash, fxRetrievedAt.hashCode);
+    _$hash = $jc(_$hash, fxStatus.hashCode);
     _$hash = $jc(_$hash, categories.hashCode);
     _$hash = $jc(_$hash, comments.hashCode);
     _$hash = $jc(_$hash, customFields.hashCode);
@@ -127,6 +167,14 @@ class _$Receipt extends Receipt {
   String toString() {
     return (newBuiltValueToStringHelper(r'Receipt')
           ..add('amount', amount)
+          ..add('documentAmount', documentAmount)
+          ..add('documentCurrencyCode', documentCurrencyCode)
+          ..add('estimatedBaseAmount', estimatedBaseAmount)
+          ..add('fxRate', fxRate)
+          ..add('fxDate', fxDate)
+          ..add('fxProvider', fxProvider)
+          ..add('fxRetrievedAt', fxRetrievedAt)
+          ..add('fxStatus', fxStatus)
           ..add('categories', categories)
           ..add('comments', comments)
           ..add('customFields', customFields)
@@ -154,6 +202,42 @@ class ReceiptBuilder implements Builder<Receipt, ReceiptBuilder> {
   String? _amount;
   String? get amount => _$this._amount;
   set amount(String? amount) => _$this._amount = amount;
+
+  String? _documentAmount;
+  String? get documentAmount => _$this._documentAmount;
+  set documentAmount(String? documentAmount) =>
+      _$this._documentAmount = documentAmount;
+
+  String? _documentCurrencyCode;
+  String? get documentCurrencyCode => _$this._documentCurrencyCode;
+  set documentCurrencyCode(String? documentCurrencyCode) =>
+      _$this._documentCurrencyCode = documentCurrencyCode;
+
+  String? _estimatedBaseAmount;
+  String? get estimatedBaseAmount => _$this._estimatedBaseAmount;
+  set estimatedBaseAmount(String? estimatedBaseAmount) =>
+      _$this._estimatedBaseAmount = estimatedBaseAmount;
+
+  String? _fxRate;
+  String? get fxRate => _$this._fxRate;
+  set fxRate(String? fxRate) => _$this._fxRate = fxRate;
+
+  DateTime? _fxDate;
+  DateTime? get fxDate => _$this._fxDate;
+  set fxDate(DateTime? fxDate) => _$this._fxDate = fxDate;
+
+  String? _fxProvider;
+  String? get fxProvider => _$this._fxProvider;
+  set fxProvider(String? fxProvider) => _$this._fxProvider = fxProvider;
+
+  DateTime? _fxRetrievedAt;
+  DateTime? get fxRetrievedAt => _$this._fxRetrievedAt;
+  set fxRetrievedAt(DateTime? fxRetrievedAt) =>
+      _$this._fxRetrievedAt = fxRetrievedAt;
+
+  FxStatus? _fxStatus;
+  FxStatus? get fxStatus => _$this._fxStatus;
+  set fxStatus(FxStatus? fxStatus) => _$this._fxStatus = fxStatus;
 
   ListBuilder<Category>? _categories;
   ListBuilder<Category> get categories =>
@@ -241,6 +325,14 @@ class ReceiptBuilder implements Builder<Receipt, ReceiptBuilder> {
     final $v = _$v;
     if ($v != null) {
       _amount = $v.amount;
+      _documentAmount = $v.documentAmount;
+      _documentCurrencyCode = $v.documentCurrencyCode;
+      _estimatedBaseAmount = $v.estimatedBaseAmount;
+      _fxRate = $v.fxRate;
+      _fxDate = $v.fxDate;
+      _fxProvider = $v.fxProvider;
+      _fxRetrievedAt = $v.fxRetrievedAt;
+      _fxStatus = $v.fxStatus;
       _categories = $v.categories.toBuilder();
       _comments = $v.comments.toBuilder();
       _customFields = $v.customFields.toBuilder();
@@ -283,6 +375,17 @@ class ReceiptBuilder implements Builder<Receipt, ReceiptBuilder> {
           _$Receipt._(
             amount: BuiltValueNullFieldError.checkNotNull(
                 amount, r'Receipt', 'amount'),
+            documentAmount: BuiltValueNullFieldError.checkNotNull(
+                documentAmount, r'Receipt', 'documentAmount'),
+            documentCurrencyCode: BuiltValueNullFieldError.checkNotNull(
+                documentCurrencyCode, r'Receipt', 'documentCurrencyCode'),
+            estimatedBaseAmount: estimatedBaseAmount,
+            fxRate: fxRate,
+            fxDate: fxDate,
+            fxProvider: fxProvider,
+            fxRetrievedAt: fxRetrievedAt,
+            fxStatus: BuiltValueNullFieldError.checkNotNull(
+                fxStatus, r'Receipt', 'fxStatus'),
             categories: categories.build(),
             comments: comments.build(),
             customFields: customFields.build(),

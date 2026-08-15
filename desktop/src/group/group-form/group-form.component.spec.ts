@@ -231,6 +231,7 @@ describe("GroupFormComponent", () => {
 
     expect(createSpy).toHaveBeenCalledWith({
       name: "test",
+      baseCurrencyCode: "AUD",
       status: GroupStatus.Active,
       groupMembers: [],
       isolateMembers: false,
@@ -306,6 +307,7 @@ describe("GroupFormComponent", () => {
       component.originalGroup?.id as number,
       {
         name: "new name",
+        baseCurrencyCode: "AUD",
         status: GroupStatus.Active,
         groupMembers: [
           {

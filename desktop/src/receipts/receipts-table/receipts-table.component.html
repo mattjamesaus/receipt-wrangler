@@ -133,7 +133,17 @@
 </ng-template>
 
 <ng-template #amountCell let-element="element">
-  {{ element.amount | customCurrency }}
+  @if (element.fxStatus === FxStatus.Domestic) {
+    {{ element.amount | customCurrency }}
+  } @else {
+    {{ element.documentCurrencyCode }} {{ element.documentAmount | number:'1.2-4' }} →
+    @if (element.fxStatus === FxStatus.NeedsReview) {
+      needs FX review
+    } @else {
+      {{ element.fxStatus === FxStatus.Confirmed ? 'confirmed' : 'estimated' }}
+      {{ element.amount | customCurrency }}
+    }
+  }
 </ng-template>
 
 <ng-template #categoryCell let-element="element">

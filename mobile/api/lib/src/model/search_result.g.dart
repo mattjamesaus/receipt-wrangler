@@ -18,7 +18,13 @@ class _$SearchResult extends SearchResult {
   @override
   final String date;
   @override
-  final String? amount;
+  final String amount;
+  @override
+  final String documentAmount;
+  @override
+  final String documentCurrencyCode;
+  @override
+  final FxStatus fxStatus;
   @override
   final ReceiptStatus? receiptStatus;
   @override
@@ -35,7 +41,10 @@ class _$SearchResult extends SearchResult {
       required this.type,
       required this.groupId,
       required this.date,
-      this.amount,
+      required this.amount,
+      required this.documentAmount,
+      required this.documentCurrencyCode,
+      required this.fxStatus,
       this.receiptStatus,
       this.paidByUserId,
       required this.createdAt})
@@ -57,6 +66,9 @@ class _$SearchResult extends SearchResult {
         groupId == other.groupId &&
         date == other.date &&
         amount == other.amount &&
+        documentAmount == other.documentAmount &&
+        documentCurrencyCode == other.documentCurrencyCode &&
+        fxStatus == other.fxStatus &&
         receiptStatus == other.receiptStatus &&
         paidByUserId == other.paidByUserId &&
         createdAt == other.createdAt;
@@ -71,6 +83,9 @@ class _$SearchResult extends SearchResult {
     _$hash = $jc(_$hash, groupId.hashCode);
     _$hash = $jc(_$hash, date.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
+    _$hash = $jc(_$hash, documentAmount.hashCode);
+    _$hash = $jc(_$hash, documentCurrencyCode.hashCode);
+    _$hash = $jc(_$hash, fxStatus.hashCode);
     _$hash = $jc(_$hash, receiptStatus.hashCode);
     _$hash = $jc(_$hash, paidByUserId.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
@@ -87,6 +102,9 @@ class _$SearchResult extends SearchResult {
           ..add('groupId', groupId)
           ..add('date', date)
           ..add('amount', amount)
+          ..add('documentAmount', documentAmount)
+          ..add('documentCurrencyCode', documentCurrencyCode)
+          ..add('fxStatus', fxStatus)
           ..add('receiptStatus', receiptStatus)
           ..add('paidByUserId', paidByUserId)
           ..add('createdAt', createdAt))
@@ -122,6 +140,20 @@ class SearchResultBuilder
   String? get amount => _$this._amount;
   set amount(String? amount) => _$this._amount = amount;
 
+  String? _documentAmount;
+  String? get documentAmount => _$this._documentAmount;
+  set documentAmount(String? documentAmount) =>
+      _$this._documentAmount = documentAmount;
+
+  String? _documentCurrencyCode;
+  String? get documentCurrencyCode => _$this._documentCurrencyCode;
+  set documentCurrencyCode(String? documentCurrencyCode) =>
+      _$this._documentCurrencyCode = documentCurrencyCode;
+
+  FxStatus? _fxStatus;
+  FxStatus? get fxStatus => _$this._fxStatus;
+  set fxStatus(FxStatus? fxStatus) => _$this._fxStatus = fxStatus;
+
   ReceiptStatus? _receiptStatus;
   ReceiptStatus? get receiptStatus => _$this._receiptStatus;
   set receiptStatus(ReceiptStatus? receiptStatus) =>
@@ -148,6 +180,9 @@ class SearchResultBuilder
       _groupId = $v.groupId;
       _date = $v.date;
       _amount = $v.amount;
+      _documentAmount = $v.documentAmount;
+      _documentCurrencyCode = $v.documentCurrencyCode;
+      _fxStatus = $v.fxStatus;
       _receiptStatus = $v.receiptStatus;
       _paidByUserId = $v.paidByUserId;
       _createdAt = $v.createdAt;
@@ -181,7 +216,14 @@ class SearchResultBuilder
               groupId, r'SearchResult', 'groupId'),
           date: BuiltValueNullFieldError.checkNotNull(
               date, r'SearchResult', 'date'),
-          amount: amount,
+          amount: BuiltValueNullFieldError.checkNotNull(
+              amount, r'SearchResult', 'amount'),
+          documentAmount: BuiltValueNullFieldError.checkNotNull(
+              documentAmount, r'SearchResult', 'documentAmount'),
+          documentCurrencyCode: BuiltValueNullFieldError.checkNotNull(
+              documentCurrencyCode, r'SearchResult', 'documentCurrencyCode'),
+          fxStatus: BuiltValueNullFieldError.checkNotNull(
+              fxStatus, r'SearchResult', 'fxStatus'),
           receiptStatus: receiptStatus,
           paidByUserId: paidByUserId,
           createdAt: BuiltValueNullFieldError.checkNotNull(

@@ -27,6 +27,10 @@ class _$ReceiptPagedRequestFilter extends ReceiptPagedRequestFilter {
   final JsonObject? resolvedDate;
   @override
   final JsonObject? createdAt;
+  @override
+  final JsonObject? documentCurrency;
+  @override
+  final JsonObject? fxStatus;
 
   factory _$ReceiptPagedRequestFilter(
           [void Function(ReceiptPagedRequestFilterBuilder)? updates]) =>
@@ -42,7 +46,9 @@ class _$ReceiptPagedRequestFilter extends ReceiptPagedRequestFilter {
       this.status,
       this.group,
       this.resolvedDate,
-      this.createdAt})
+      this.createdAt,
+      this.documentCurrency,
+      this.fxStatus})
       : super._();
   @override
   ReceiptPagedRequestFilter rebuild(
@@ -66,7 +72,9 @@ class _$ReceiptPagedRequestFilter extends ReceiptPagedRequestFilter {
         status == other.status &&
         group == other.group &&
         resolvedDate == other.resolvedDate &&
-        createdAt == other.createdAt;
+        createdAt == other.createdAt &&
+        documentCurrency == other.documentCurrency &&
+        fxStatus == other.fxStatus;
   }
 
   @override
@@ -82,6 +90,8 @@ class _$ReceiptPagedRequestFilter extends ReceiptPagedRequestFilter {
     _$hash = $jc(_$hash, group.hashCode);
     _$hash = $jc(_$hash, resolvedDate.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
+    _$hash = $jc(_$hash, documentCurrency.hashCode);
+    _$hash = $jc(_$hash, fxStatus.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -98,7 +108,9 @@ class _$ReceiptPagedRequestFilter extends ReceiptPagedRequestFilter {
           ..add('status', status)
           ..add('group', group)
           ..add('resolvedDate', resolvedDate)
-          ..add('createdAt', createdAt))
+          ..add('createdAt', createdAt)
+          ..add('documentCurrency', documentCurrency)
+          ..add('fxStatus', fxStatus))
         .toString();
   }
 }
@@ -149,6 +161,15 @@ class ReceiptPagedRequestFilterBuilder
   JsonObject? get createdAt => _$this._createdAt;
   set createdAt(JsonObject? createdAt) => _$this._createdAt = createdAt;
 
+  JsonObject? _documentCurrency;
+  JsonObject? get documentCurrency => _$this._documentCurrency;
+  set documentCurrency(JsonObject? documentCurrency) =>
+      _$this._documentCurrency = documentCurrency;
+
+  JsonObject? _fxStatus;
+  JsonObject? get fxStatus => _$this._fxStatus;
+  set fxStatus(JsonObject? fxStatus) => _$this._fxStatus = fxStatus;
+
   ReceiptPagedRequestFilterBuilder() {
     ReceiptPagedRequestFilter._defaults(this);
   }
@@ -166,6 +187,8 @@ class ReceiptPagedRequestFilterBuilder
       _group = $v.group;
       _resolvedDate = $v.resolvedDate;
       _createdAt = $v.createdAt;
+      _documentCurrency = $v.documentCurrency;
+      _fxStatus = $v.fxStatus;
       _$v = null;
     }
     return this;
@@ -197,6 +220,8 @@ class ReceiptPagedRequestFilterBuilder
           group: group,
           resolvedDate: resolvedDate,
           createdAt: createdAt,
+          documentCurrency: documentCurrency,
+          fxStatus: fxStatus,
         );
     replace(_$result);
     return _$result;

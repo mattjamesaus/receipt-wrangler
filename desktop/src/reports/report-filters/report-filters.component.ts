@@ -5,7 +5,7 @@ import { Store } from "@ngxs/store";
 import { RECEIPT_STATUS_OPTIONS } from "src/constants";
 import { AuthState, GroupState, UserState } from "src/store";
 import { OperationsPipe } from "../../shared-ui/receipt-filter/operations.pipe";
-import { Category, FilterOperation, Tag } from "../../open-api";
+import { Category, FilterOperation, FxStatus, Tag } from "../../open-api";
 
 /**
  * The pinned "report generator" paid-by option id — negative so it never collides
@@ -29,7 +29,7 @@ interface FilterFieldDef {
   label: string;
   type: "text" | "number" | "date" | "users" | "list";
   isCurrency?: boolean;
-  optionsKey?: "categories" | "tags" | "status";
+  optionsKey?: "categories" | "tags" | "status" | "fxStatus";
   optionValueKey?: string;
   optionFilterKey?: string;
   optionDisplayKey?: string;
@@ -43,6 +43,8 @@ const FILTER_FIELDS: FilterFieldDef[] = [
   { field: "categories", label: "Categories", type: "list", optionsKey: "categories", optionValueKey: "id", optionFilterKey: "name", optionDisplayKey: "name" },
   { field: "tags", label: "Tags", type: "list", optionsKey: "tags", optionValueKey: "id", optionFilterKey: "name", optionDisplayKey: "name" },
   { field: "status", label: "Status", type: "list", optionsKey: "status", optionValueKey: "value", optionFilterKey: "value", optionDisplayKey: "displayValue" },
+  { field: "documentCurrency", label: "Document Currency", type: "text" },
+  { field: "fxStatus", label: "FX Status", type: "list", optionsKey: "fxStatus", optionValueKey: "value", optionFilterKey: "value", optionDisplayKey: "displayValue" },
 ];
 
 /**
@@ -69,6 +71,7 @@ export class ReportFiltersComponent implements OnInit {
 
   public readonly FilterOperation = FilterOperation;
   public readonly receiptStatusOptions = RECEIPT_STATUS_OPTIONS;
+  public readonly fxStatusOptions = Object.values(FxStatus).map((value) => ({ value, displayValue: value.replaceAll("_", " ") }));
 
   // The "Add filter…" picker is a stateless dispatcher: app-select is
   // FormControl-driven (no change output), so a scratch control feeds each pick
@@ -155,6 +158,8 @@ export class ReportFiltersComponent implements OnInit {
         return this.tags();
       case "status":
         return this.receiptStatusOptions;
+      case "fxStatus":
+        return this.fxStatusOptions;
       default:
         return [];
     }

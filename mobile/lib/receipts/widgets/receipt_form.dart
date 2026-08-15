@@ -14,6 +14,7 @@ import 'package:receipt_wrangler_mobile/receipts/widgets/receipt_item_list.dart'
 import 'package:receipt_wrangler_mobile/shared/widgets/amount_field.dart';
 import 'package:receipt_wrangler_mobile/shared/widgets/tag_select_field.dart';
 import 'package:receipt_wrangler_mobile/utils/bottom_sheet.dart';
+import 'package:receipt_wrangler_mobile/utils/currency.dart';
 import 'package:receipt_wrangler_mobile/utils/date.dart';
 import 'package:receipt_wrangler_mobile/utils/forms.dart';
 
@@ -82,10 +83,71 @@ class _ReceiptForm extends State<ReceiptForm> {
 
   Widget buildAmountField() {
     return AmountField(
-        label: "Amount",
-        fieldName: "amount",
-        initialAmount: modifiedReceipt.amount.toString(),
+        label: "Document Amount",
+        fieldName: "documentAmount",
+        initialAmount: modifiedReceipt.documentAmount.toString(),
         formState: formState);
+  }
+
+  Widget buildDocumentCurrencyField() {
+    return FormBuilderTextField(
+      name: "documentCurrencyCode",
+      decoration: const InputDecoration(labelText: "Document Currency (ISO 4217)"),
+      initialValue: modifiedReceipt.documentCurrencyCode,
+      textCapitalization: TextCapitalization.characters,
+      maxLength: 3,
+      validator: FormBuilderValidators.compose([
+        FormBuilderValidators.required(),
+        FormBuilderValidators.match(RegExp(r'^[A-Za-z]{3}$'), errorText: 'Enter a three-letter ISO currency code'),
+      ]),
+      readOnly: isFieldReadOnly(formState),
+    );
+  }
+
+  Widget buildFxSummary() {
+    if (modifiedReceipt.fxStatus == api.FxStatus.DOMESTIC) {
+      return const SizedBox.shrink();
+    }
+    final baseAmount = formatCurrency(context, modifiedReceipt.amount) ?? modifiedReceipt.amount;
+    final status = modifiedReceipt.fxStatus == api.FxStatus.NEEDS_REVIEW
+        ? 'FX estimate needs review'
+        : '${modifiedReceipt.fxStatus == api.FxStatus.CONFIRMED ? 'confirmed' : 'estimated'} $baseAmount';
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text('${modifiedReceipt.documentCurrencyCode} ${modifiedReceipt.documentAmount} → $status'),
+    );
+  }
+
+  Widget buildEffectiveAmountField() {
+    if (modifiedReceipt.fxStatus == api.FxStatus.DOMESTIC) {
+      return const SizedBox.shrink();
+    }
+    return AmountField(
+      label: "Effective Base Amount",
+      fieldName: "amount",
+      initialAmount: modifiedReceipt.amount,
+      formState: formState,
+    );
+  }
+
+  Widget buildFxStatusField() {
+    if (modifiedReceipt.fxStatus == api.FxStatus.DOMESTIC) {
+      return const SizedBox.shrink();
+    }
+    final statuses = [api.FxStatus.ESTIMATED, api.FxStatus.CONFIRMED, api.FxStatus.NEEDS_REVIEW];
+    return FormBuilderDropdown<api.FxStatus>(
+      name: "fxStatus",
+      decoration: const InputDecoration(labelText: "FX Status"),
+      items: statuses
+          .map((status) => DropdownMenuItem(
+                value: status,
+                child: Text(status.name.replaceAll('_', ' ')),
+              ))
+          .toList(),
+      initialValue: modifiedReceipt.fxStatus,
+      enabled: !isFieldReadOnly(formState),
+      validator: FormBuilderValidators.required(),
+    );
   }
 
   Widget buildDateField() {
@@ -646,6 +708,14 @@ class _ReceiptForm extends State<ReceiptForm> {
           textFieldSpacing,
           buildAmountField(),
           textFieldSpacing,
+          buildDocumentCurrencyField(),
+          textFieldSpacing,
+          buildFxSummary(),
+          if (modifiedReceipt.fxStatus != api.FxStatus.DOMESTIC) textFieldSpacing,
+          buildEffectiveAmountField(),
+          if (modifiedReceipt.fxStatus != api.FxStatus.DOMESTIC) textFieldSpacing,
+          buildFxStatusField(),
+          if (modifiedReceipt.fxStatus != api.FxStatus.DOMESTIC) textFieldSpacing,
           buildDateField(),
           textFieldSpacing,
           buildGroupField(),

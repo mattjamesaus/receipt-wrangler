@@ -28,6 +28,9 @@ class _SearchScreen extends State<SearchScreen> {
         var searchResult = searchResults[index];
         var receipt = (api.ReceiptBuilder()
               ..amount = searchResult.amount
+              ..documentAmount = searchResult.documentAmount
+              ..documentCurrencyCode = searchResult.documentCurrencyCode
+              ..fxStatus = searchResult.fxStatus
               ..date = searchResult.date
               ..groupId = searchResult.groupId
               ..id = searchResult.id

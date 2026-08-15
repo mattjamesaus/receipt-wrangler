@@ -212,7 +212,14 @@ func TestSearchReceiptsForUserScopesAndAppliesPaidBy(t *testing.T) {
 		t.Fatalf("create other group: %v", err)
 	}
 
-	seedReceipt(t, "Coffee allowed", groupId, allowedPayer)
+	allowedReceipt := seedReceipt(t, "Coffee allowed", groupId, allowedPayer)
+	if err := repositories.GetDB().Model(&allowedReceipt).Updates(map[string]interface{}{
+		"document_amount":        decimal.NewFromInt(100),
+		"document_currency_code": "USD",
+		"fx_status":              models.FX_ESTIMATED,
+	}).Error; err != nil {
+		t.Fatalf("set receipt currency: %v", err)
+	}
 	seedReceipt(t, "Coffee hidden", groupId, hiddenPayer)
 	seedReceipt(t, "Coffee elsewhere", otherGroup.ID, allowedPayer)
 
@@ -225,6 +232,9 @@ func TestSearchReceiptsForUserScopesAndAppliesPaidBy(t *testing.T) {
 	}
 	if results[0].GroupID != groupId || results[0].PaidByUserId != allowedPayer {
 		t.Errorf("expected the allowed-payer receipt in the member's group, got %+v", results[0])
+	}
+	if results[0].DocumentCurrencyCode != "USD" || !results[0].DocumentAmount.Equal(decimal.NewFromInt(100)) || results[0].FxStatus != models.FX_ESTIMATED {
+		t.Errorf("expected original currency metadata in search result, got %+v", results[0])
 	}
 }
 

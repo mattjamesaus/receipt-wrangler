@@ -6,14 +6,18 @@ import (
 	"receipt-wrangler/api/internal/models"
 	"receipt-wrangler/api/internal/structs"
 	"receipt-wrangler/api/internal/utils"
+	"strings"
+
+	"golang.org/x/text/currency"
 )
 
 type UpsertGroupCommand struct {
-	Name           string                     `gorm:"not null" json:"name"`
-	GroupMembers   []UpsertGroupMemberCommand `json:"groupMembers"`
-	Status         models.GroupStatus         `gorm:"default:'ACTIVE'; not null" json:"status"`
-	IsAllGroup     bool                       `json:"isAllGroup" gorm:"default:false"`
-	IsDefaultGroup bool                       `json:"isDefault"`
+	Name             string                     `gorm:"not null" json:"name"`
+	GroupMembers     []UpsertGroupMemberCommand `json:"groupMembers"`
+	Status           models.GroupStatus         `gorm:"default:'ACTIVE'; not null" json:"status"`
+	IsAllGroup       bool                       `json:"isAllGroup" gorm:"default:false"`
+	IsDefaultGroup   bool                       `json:"isDefault"`
+	BaseCurrencyCode string                     `json:"baseCurrencyCode"`
 	// IsolateMembers turns on member-presence isolation for the group. Default
 	// false ⇒ existing groups behave exactly as before.
 	IsolateMembers bool `json:"isolateMembers"`
@@ -45,6 +49,16 @@ func (command *UpsertGroupCommand) Validate(isCreate bool) structs.ValidatorErro
 
 	if len(command.Status) == 0 {
 		errorMap["status"] = "Status is required"
+	}
+
+	command.BaseCurrencyCode = strings.ToUpper(strings.TrimSpace(command.BaseCurrencyCode))
+	if command.BaseCurrencyCode == "" && isCreate {
+		command.BaseCurrencyCode = "AUD"
+	}
+	if command.BaseCurrencyCode != "" {
+		if _, err := currency.ParseISO(command.BaseCurrencyCode); err != nil {
+			errorMap["baseCurrencyCode"] = "Base Currency Code must be a valid ISO 4217 code"
+		}
 	}
 
 	if !isCreate {

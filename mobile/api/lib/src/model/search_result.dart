@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/fx_status.dart';
 import 'package:openapi/src/model/receipt_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -12,15 +13,18 @@ part 'search_result.g.dart';
 /// SearchResult
 ///
 /// Properties:
-/// * [id] 
-/// * [name] 
-/// * [type] 
-/// * [groupId] 
-/// * [date] 
-/// * [amount] 
-/// * [receiptStatus] 
-/// * [paidByUserId] 
-/// * [createdAt] 
+/// * [id]
+/// * [name]
+/// * [type]
+/// * [groupId]
+/// * [date]
+/// * [amount] - Effective amount in the group's base currency
+/// * [documentAmount] - Original total printed on the receipt evidence
+/// * [documentCurrencyCode] - ISO 4217 currency printed on the receipt evidence
+/// * [fxStatus]
+/// * [receiptStatus]
+/// * [paidByUserId]
+/// * [createdAt]
 @BuiltValue()
 abstract class SearchResult implements Built<SearchResult, SearchResultBuilder> {
   @BuiltValueField(wireName: r'id')
@@ -38,8 +42,21 @@ abstract class SearchResult implements Built<SearchResult, SearchResultBuilder> 
   @BuiltValueField(wireName: r'date')
   String get date;
 
+  /// Effective amount in the group's base currency
   @BuiltValueField(wireName: r'amount')
-  String? get amount;
+  String get amount;
+
+  /// Original total printed on the receipt evidence
+  @BuiltValueField(wireName: r'documentAmount')
+  String get documentAmount;
+
+  /// ISO 4217 currency printed on the receipt evidence
+  @BuiltValueField(wireName: r'documentCurrencyCode')
+  String get documentCurrencyCode;
+
+  @BuiltValueField(wireName: r'fxStatus')
+  FxStatus get fxStatus;
+  // enum fxStatusEnum {  DOMESTIC,  ESTIMATED,  CONFIRMED,  NEEDS_REVIEW,  };
 
   @BuiltValueField(wireName: r'receiptStatus')
   ReceiptStatus? get receiptStatus;
@@ -99,13 +116,26 @@ class _$SearchResultSerializer implements PrimitiveSerializer<SearchResult> {
       object.date,
       specifiedType: const FullType(String),
     );
-    if (object.amount != null) {
-      yield r'amount';
-      yield serializers.serialize(
-        object.amount,
-        specifiedType: const FullType(String),
-      );
-    }
+    yield r'amount';
+    yield serializers.serialize(
+      object.amount,
+      specifiedType: const FullType(String),
+    );
+    yield r'documentAmount';
+    yield serializers.serialize(
+      object.documentAmount,
+      specifiedType: const FullType(String),
+    );
+    yield r'documentCurrencyCode';
+    yield serializers.serialize(
+      object.documentCurrencyCode,
+      specifiedType: const FullType(String),
+    );
+    yield r'fxStatus';
+    yield serializers.serialize(
+      object.fxStatus,
+      specifiedType: const FullType(FxStatus),
+    );
     if (object.receiptStatus != null) {
       yield r'receiptStatus';
       yield serializers.serialize(
@@ -189,6 +219,27 @@ class _$SearchResultSerializer implements PrimitiveSerializer<SearchResult> {
             specifiedType: const FullType(String),
           ) as String;
           result.amount = valueDes;
+          break;
+        case r'documentAmount':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentAmount = valueDes;
+          break;
+        case r'documentCurrencyCode':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.documentCurrencyCode = valueDes;
+          break;
+        case r'fxStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(FxStatus),
+          ) as FxStatus;
+          result.fxStatus = valueDes;
           break;
         case r'receiptStatus':
           final valueDes = serializers.deserialize(

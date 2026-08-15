@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, TemplateRef, input, output } from "@angular/core";
-import { FormControl, FormGroup, } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Store } from "@ngxs/store";
 import { endOfDay, startOfMonth } from "date-fns";
@@ -7,7 +7,7 @@ import { take, tap } from "rxjs";
 import { RECEIPT_STATUS_OPTIONS } from "src/constants";
 import { SetReceiptFilter } from "src/store/receipt-table.actions";
 import { FormCommand } from "../../form/index";
-import { Category, FilterOperation, Tag } from "../../open-api";
+import { Category, FilterOperation, FxStatus, Tag } from "../../open-api";
 import { GroupState } from "../../store";
 import { OperationsPipe } from "./operations.pipe";
 
@@ -39,6 +39,7 @@ export class ReceiptFilterComponent implements OnInit {
   public readonly formInitialized = output<FormGroup>();
 
   public receiptStatusOptions = RECEIPT_STATUS_OPTIONS;
+  public fxStatusOptions = Object.values(FxStatus).map((value) => ({ value, displayValue: value.replaceAll("_", " ") }));
 
   // Sourced from the selected group's grant-filtered AppData catalog by the
   // caller (set imperatively for the dialog, bound for the inline dashboard use)
@@ -99,6 +100,10 @@ export class ReceiptFilterComponent implements OnInit {
       path: `${this.basePath}group.value`,
       command: "clear",
     });
+    this.formCommand.emit({
+      path: `${this.basePath}fxStatus.value`,
+      command: "clear",
+    });
   }
 
   public submitButtonClicked(): void {
@@ -135,7 +140,9 @@ export class ReceiptFilterComponent implements OnInit {
       { fieldName: "status", type: "list" },
       { fieldName: "group", type: "list" },
       { fieldName: "resolvedDate", type: "date" },
-      { fieldName: "createdAt", type: "date" }
+      { fieldName: "createdAt", type: "date" },
+      { fieldName: "documentCurrency", type: "text" },
+      { fieldName: "fxStatus", type: "list" },
     ];
 
     fieldsToWatch.forEach(({ fieldName, type }) => {

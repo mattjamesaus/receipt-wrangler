@@ -302,7 +302,10 @@ class ReceiptBottomSheetBuilder {
     var receiptToUpdate = (api.UpsertReceiptCommandBuilder()
       ..name = form["name"]
       ..date = form["date"]
-      ..amount = form["amount"]
+      ..amount = form["amount"] ?? receiptModel.modifiedReceipt.amount
+      ..documentAmount = form["documentAmount"]
+      ..documentCurrencyCode = form["documentCurrencyCode"]
+      ..fxStatus = form["fxStatus"] ?? receiptModel.modifiedReceipt.fxStatus
       ..status = form["status"]
       ..groupId = form["groupId"]
       ..paidByUserId = form["paidByUserId"]

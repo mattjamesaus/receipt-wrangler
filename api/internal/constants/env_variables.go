@@ -22,4 +22,6 @@ const (
 	ChromiumBinaryPath             EnvironmentVariable = "CHROMIUM_BINARY_PATH"
 	ChromiumSandbox                EnvironmentVariable = "CHROMIUM_SANDBOX"
 	ChromiumAllowExternalResources EnvironmentVariable = "CHROMIUM_ALLOW_EXTERNAL_RESOURCES"
+	FxProviderBaseURL              EnvironmentVariable = "FX_PROVIDER_BASE_URL"
+	FxRateProvider                 EnvironmentVariable = "FX_RATE_PROVIDER"
 )

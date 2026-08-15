@@ -199,6 +199,7 @@ export class GroupFormComponent implements OnInit, AfterViewInit {
       groupMembers: this.formBuilder.array(groupMembers),
       status: this.originalGroup?.status ?? GroupStatus.Active,
       isolateMembers: this.originalGroup?.isolateMembers ?? false,
+      baseCurrencyCode: [this.originalGroup?.baseCurrencyCode ?? "AUD", [Validators.required, Validators.pattern(/^[A-Za-z]{3}$/)]],
     });
 
     this.groupMembers.valueChanges

@@ -3361,6 +3361,14 @@ components:
         - "RESOLVED"
         - "DRAFT"
         - ""
+    FxStatus:
+      description: Provenance status for the receipt's effective base-currency amount
+      type: string
+      enum:
+        - "DOMESTIC"
+        - "ESTIMATED"
+        - "CONFIRMED"
+        - "NEEDS_REVIEW"
     QuickScanDefaultPaidByType:
       description: How the default paid-by is resolved for optional quick-scan paid-by
       type: string
@@ -4021,6 +4029,7 @@ components:
         - groupMembers
         - isAllGroup
         - groupReceiptSettings
+        - baseCurrencyCode
       type: object
       properties:
         createdAt:
@@ -4055,6 +4064,11 @@ components:
             Whether member-presence isolation is enabled for the group. When on,
             members cannot discover other members unless they hold a group role
             flagged seesAllMembers. Defaults to false.
+        baseCurrencyCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 accounting currency used for effective receipt amounts
         status:
           type: string
           $ref: "#/components/schemas/GroupStatus"
@@ -4088,6 +4102,11 @@ components:
             Whether to enable member-presence isolation for the group. When on,
             members cannot discover other members unless they hold a group role
             flagged seesAllMembers. Defaults to false.
+        baseCurrencyCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 accounting currency; defaults to AUD when omitted
         status:
           type: string
           $ref: "#/components/schemas/GroupStatus"
@@ -4298,11 +4317,46 @@ components:
         - receiptItems
         - comments
         - id
+        - documentAmount
+        - documentCurrencyCode
+        - fxStatus
       type: object
       properties:
         amount:
           type: string
-          description: Receipt total amount
+          description: Effective amount in the group's base currency
+        documentAmount:
+          type: string
+          description: Original total printed on the receipt evidence
+        documentCurrencyCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 currency printed on the receipt evidence
+        estimatedBaseAmount:
+          type: string
+          nullable: true
+          description: Historical-rate estimate in the group's base currency
+        fxRate:
+          type: string
+          nullable: true
+          description: Exact document-to-base exchange rate used for the estimate
+        fxDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Effective date returned by the FX provider
+        fxProvider:
+          type: string
+          nullable: true
+          description: Provider used for the historical estimate
+        fxRetrievedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: UTC instant at which the rate was retrieved
+        fxStatus:
+          $ref: "#/components/schemas/FxStatus"
         categories:
           type: array
           description: Categories associated to receipt
@@ -4763,6 +4817,10 @@ components:
           $ref: "#/components/schemas/PagedRequestField"
         createdAt:
           $ref: "#/components/schemas/PagedRequestField"
+        documentCurrency:
+          $ref: "#/components/schemas/PagedRequestField"
+        fxStatus:
+          $ref: "#/components/schemas/PagedRequestField"
     PagedRequestField:
       type: object
       description: "Contains two keys: operation of type FilterOperation and value which can a different type depending on the field."
@@ -4774,6 +4832,10 @@ components:
         - groupId
         - date
         - createdAt
+        - amount
+        - documentAmount
+        - documentCurrencyCode
+        - fxStatus
       type: object
       properties:
         id:
@@ -4788,6 +4850,17 @@ components:
           type: string
         amount:
           type: string
+          description: Effective amount in the group's base currency
+        documentAmount:
+          type: string
+          description: Original total printed on the receipt evidence
+        documentCurrencyCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 currency printed on the receipt evidence
+        fxStatus:
+          $ref: "#/components/schemas/FxStatus"
         receiptStatus:
           $ref: "#/components/schemas/ReceiptStatus"
         paidByUserId:
@@ -5499,7 +5572,17 @@ components:
           description: Receipt name
         amount:
           type: string
-          description: Receipt total amount
+          description: Effective base-currency amount; required for compatibility and confirmed FX values
+        documentAmount:
+          type: string
+          description: Original total printed on the receipt; defaults to amount when omitted
+        documentCurrencyCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 currency printed on the receipt; defaults to the group base currency
+        fxStatus:
+          $ref: "#/components/schemas/FxStatus"
         date:
           type: string
           description: Receipt date

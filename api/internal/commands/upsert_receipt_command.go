@@ -3,27 +3,33 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"net/http"
 	"receipt-wrangler/api/internal/models"
 	"receipt-wrangler/api/internal/structs"
 	"receipt-wrangler/api/internal/utils"
+	"strings"
 	"time"
+
+	"github.com/shopspring/decimal"
+	"golang.org/x/text/currency"
 )
 
 type UpsertReceiptCommand struct {
-	Name            string                          `json:"name"`
-	Amount          decimal.Decimal                 `json:"amount"`
-	Date            time.Time                       `json:"date"`
-	GroupId         uint                            `json:"groupId"`
-	PaidByUserID    uint                            `json:"paidByUserId"`
-	Status          models.ReceiptStatus            `json:"status"`
-	Categories      []UpsertCategoryCommand         `json:"categories"`
-	Tags            []UpsertTagCommand              `json:"tags"`
-	Items           []UpsertItemCommand             `json:"receiptItems"`
-	Comments        []UpsertCommentCommand          `json:"comments"`
-	CustomFields    []UpsertCustomFieldValueCommand `json:"customFields"`
-	CreatedByString string                          `json:"createdByString"`
+	Name                 string                          `json:"name"`
+	Amount               decimal.Decimal                 `json:"amount"`
+	DocumentAmount       *decimal.Decimal                `json:"documentAmount"`
+	DocumentCurrencyCode string                          `json:"documentCurrencyCode"`
+	FxStatus             models.FxStatus                 `json:"fxStatus"`
+	Date                 time.Time                       `json:"date"`
+	GroupId              uint                            `json:"groupId"`
+	PaidByUserID         uint                            `json:"paidByUserId"`
+	Status               models.ReceiptStatus            `json:"status"`
+	Categories           []UpsertCategoryCommand         `json:"categories"`
+	Tags                 []UpsertTagCommand              `json:"tags"`
+	Items                []UpsertItemCommand             `json:"receiptItems"`
+	Comments             []UpsertCommentCommand          `json:"comments"`
+	CustomFields         []UpsertCustomFieldValueCommand `json:"customFields"`
+	CreatedByString      string                          `json:"createdByString"`
 }
 
 func (receipt *UpsertReceiptCommand) LoadDataFromRequest(w http.ResponseWriter, r *http.Request) error {
@@ -80,9 +86,27 @@ func (receipt *UpsertReceiptCommand) Validate(tokenUserId uint, isCreate bool) s
 		}
 	}
 
+	documentAmount := receipt.Amount
+	if receipt.DocumentAmount != nil {
+		documentAmount = *receipt.DocumentAmount
+	}
+
+	if len(receipt.DocumentCurrencyCode) > 0 {
+		receipt.DocumentCurrencyCode = strings.ToUpper(strings.TrimSpace(receipt.DocumentCurrencyCode))
+		if _, err := currency.ParseISO(receipt.DocumentCurrencyCode); err != nil {
+			errors["documentCurrencyCode"] = "Document Currency Code must be a valid ISO 4217 code"
+		}
+	}
+
+	if receipt.FxStatus != "" && !models.IsValidFxStatus(receipt.FxStatus) {
+		errors["fxStatus"] = "FX Status is invalid"
+	}
+
 	for i, item := range receipt.Items {
 		basePath := "receiptItems." + fmt.Sprintf("%d", i)
-		itemErrors := item.Validate(receipt.Amount, isCreate)
+		// Line items are printed-evidence values, so they validate against the
+		// document amount rather than the converted reporting amount.
+		itemErrors := item.Validate(documentAmount, isCreate)
 		for key, value := range itemErrors.Errors {
 			errors[basePath+"."+key] = value
 		}

@@ -22,6 +22,8 @@ part 'receipt_paged_request_filter.g.dart';
 /// * [group] - Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
 /// * [resolvedDate] - Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
 /// * [createdAt] - Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+/// * [documentCurrency] - Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+/// * [fxStatus] - Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
 @BuiltValue()
 abstract class ReceiptPagedRequestFilter implements Built<ReceiptPagedRequestFilter, ReceiptPagedRequestFilterBuilder> {
   /// Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
@@ -63,6 +65,14 @@ abstract class ReceiptPagedRequestFilter implements Built<ReceiptPagedRequestFil
   /// Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
   @BuiltValueField(wireName: r'createdAt')
   JsonObject? get createdAt;
+
+  /// Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+  @BuiltValueField(wireName: r'documentCurrency')
+  JsonObject? get documentCurrency;
+
+  /// Contains two keys: operation of type FilterOperation and value which can a different type depending on the field.
+  @BuiltValueField(wireName: r'fxStatus')
+  JsonObject? get fxStatus;
 
   ReceiptPagedRequestFilter._();
 
@@ -154,6 +164,20 @@ class _$ReceiptPagedRequestFilterSerializer implements PrimitiveSerializer<Recei
       yield r'createdAt';
       yield serializers.serialize(
         object.createdAt,
+        specifiedType: const FullType(JsonObject),
+      );
+    }
+    if (object.documentCurrency != null) {
+      yield r'documentCurrency';
+      yield serializers.serialize(
+        object.documentCurrency,
+        specifiedType: const FullType(JsonObject),
+      );
+    }
+    if (object.fxStatus != null) {
+      yield r'fxStatus';
+      yield serializers.serialize(
+        object.fxStatus,
         specifiedType: const FullType(JsonObject),
       );
     }
@@ -249,6 +273,20 @@ class _$ReceiptPagedRequestFilterSerializer implements PrimitiveSerializer<Recei
             specifiedType: const FullType(JsonObject),
           ) as JsonObject;
           result.createdAt = valueDes;
+          break;
+        case r'documentCurrency':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(JsonObject),
+          ) as JsonObject;
+          result.documentCurrency = valueDes;
+          break;
+        case r'fxStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(JsonObject),
+          ) as JsonObject;
+          result.fxStatus = valueDes;
           break;
         default:
           unhandled.add(key);

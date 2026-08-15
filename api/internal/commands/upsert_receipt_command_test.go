@@ -165,6 +165,29 @@ func TestUpsertReceiptCommand_Validate_NestedItemErrors(t *testing.T) {
 	}
 }
 
+func TestUpsertReceiptCommand_Validate_ItemsAgainstDocumentAmount(t *testing.T) {
+	documentAmount := decimal.NewFromInt(100)
+	cmd := validReceiptCommand()
+	cmd.Amount = decimal.NewFromInt(154)
+	cmd.DocumentAmount = &documentAmount
+	cmd.DocumentCurrencyCode = "USD"
+	cmd.Items = []UpsertItemCommand{{
+		Name: "Printed line item", Amount: decimal.NewFromInt(120), Status: models.ITEM_OPEN,
+	}}
+
+	if _, exists := cmd.Validate(1, true).Errors["receiptItems.0.amount"]; !exists {
+		t.Fatal("expected item amount to be compared with documentAmount")
+	}
+}
+
+func TestUpsertReceiptCommand_Validate_InvalidDocumentCurrency(t *testing.T) {
+	cmd := validReceiptCommand()
+	cmd.DocumentCurrencyCode = "NOT-A-CURRENCY"
+	if _, exists := cmd.Validate(1, true).Errors["documentCurrencyCode"]; !exists {
+		t.Fatal("expected invalid ISO 4217 code error")
+	}
+}
+
 func TestUpsertReceiptCommand_Validate_NestedCommentErrors(t *testing.T) {
 	cmd := validReceiptCommand()
 	cmd.Comments = []UpsertCommentCommand{{}}

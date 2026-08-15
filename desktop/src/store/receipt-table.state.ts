@@ -46,6 +46,14 @@ export const defaultReceiptFilter = {
     operation: null,
     value: null,
   },
+  documentCurrency: {
+    operation: null,
+    value: null,
+  },
+  fxStatus: {
+    operation: null,
+    value: [],
+  },
 } as ReceiptPagedRequestFilter;
 
 // TODO: look into fixing date equals
