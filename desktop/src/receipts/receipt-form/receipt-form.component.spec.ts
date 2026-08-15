@@ -6,14 +6,16 @@ import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Store } from "@ngxs/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormMode } from "src/enums/form-mode.enum";
 import { PipesModule } from "src/pipes/pipes.module";
 import { SharedUiModule } from "src/shared-ui/shared-ui.module";
-import { ApiModule, CustomFieldType, ReceiptImageService, ReceiptStatus } from "../../open-api";
+import { ApiModule, CustomFieldType, ReceiptImageService, ReceiptService, ReceiptStatus, UserService } from "../../open-api";
 import { SnackbarService } from "../../services";
 import { QueueMode } from "../../services/receipt-queue.service";
+import { SetGroupCatalog } from "../../store";
 import { StoreModule } from "../../store/store.module";
 import { ReceiptFormComponent } from "./receipt-form.component";
 
@@ -297,6 +299,58 @@ describe("ReceiptFormComponent", () => {
     expect(component.originalReceipt?.id).toEqual(2);
     expect(component.form.get("name")?.value).toEqual("Duplicate");
     expect(component.editLink).toEqual("/receipts/2/edit");
+  });
+
+  it("refreshes group tags after inline creation before another receipt is loaded", () => {
+    const store = TestBed.inject(Store);
+    const existingTag = { id: 10, name: "Existing" } as any;
+    const inlineTag = { name: "New inline tag" } as any;
+    const persistedTag = { id: 11, name: "New inline tag" } as any;
+    const firstReceipt = {
+      id: 1,
+      name: "First",
+      amount: "10.00",
+      groupId: 7,
+      customFields: [],
+      receiptItems: [{ id: 101, name: "Item one", amount: "10.00", tags: [inlineTag] }],
+    } as any;
+    const secondReceipt = {
+      id: 2,
+      name: "Second",
+      amount: "5.00",
+      groupId: 7,
+      customFields: [],
+      receiptItems: [{ id: 102, name: "Item two", amount: "5.00", tags: [] }],
+    } as any;
+
+    store.dispatch(new SetGroupCatalog({ 7: [] }, { 7: [existingTag] }));
+    routeDataSubject.next({
+      mode: FormMode.edit,
+      customFields: [],
+      receipt: firstReceipt,
+    });
+
+    jest.spyOn(TestBed.inject(ReceiptService), "updateReceipt").mockReturnValue(of(firstReceipt));
+    const getAppDataSpy = jest.spyOn(TestBed.inject(UserService), "getAppData").mockReturnValue(of({
+      groupCategories: { 7: [] },
+      groupTags: { 7: [existingTag, persistedTag] },
+    } as any));
+    jest.spyOn(TestBed.inject(Router), "navigate").mockResolvedValue(true);
+    jest.spyOn(TestBed.inject(SnackbarService), "success").mockReturnValue(undefined);
+
+    (component as any).updateReceipt();
+
+    expect(getAppDataSpy).toHaveBeenCalledTimes(1);
+    expect(component.form.get("receiptItems.0.tags")?.value).toEqual([inlineTag]);
+
+    routeDataSubject.next({
+      mode: FormMode.edit,
+      customFields: [],
+      receipt: secondReceipt,
+    });
+
+    expect(component.tags).toEqual([existingTag, persistedTag]);
+    expect(component.tags.filter((tag) => tag.id === persistedTag.id)).toHaveLength(1);
   });
 
   // Full-receipt magic-fill ingest: proves the form takes in every field the
