@@ -34,7 +34,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Secrets are empty strings when unset, so a missing E2E_BASE_URL becomes
+  # E2E_MOBILE_BASE_URL=/api and Dio/http fail with "Must be a valid URL" /
+  # "No host specified in URI /api/login/". Skip on forks that do not
+  # configure the demo backend rather than burning ~18 min of emulator time.
+  check-e2e-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+        run: |
+          if [ -n "$E2E_BASE_URL" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping mobile e2e: repository secret E2E_BASE_URL is not set"
+          fi
+
   android-e2e:
+    needs: check-e2e-secrets
+    if: needs.check-e2e-secrets.outputs.configured == 'true'
     runs-on: ubuntu-latest
     continue-on-error: true
     timeout-minutes: 45
@@ -211,6 +233,8 @@ jobs:
             integration_test/login_qr_deep_link_test.dart
 
   ios-e2e:
+    needs: check-e2e-secrets
+    if: needs.check-e2e-secrets.outputs.configured == 'true'
     # macos-14 ships Xcode 15.4 + iOS 17.0/17.2/17.4/17.5/18.1/18.2
     # simulators preinstalled; xcrun simctl is on PATH out of the box.
     # Free for public repos, so the 10x macOS multiplier doesn't apply.

@@ -706,7 +706,7 @@ End-to-end tests live in `e2e/` and use **Playwright**. They drive the real Angu
 
 ### CI
 
-In CI the same spec files run against the demo URL. GitHub secrets populate the `E2E_*` vars — point `E2E_BASE_URL` at `https://demo.receiptwrangler.io` and supply the secret credentials. When `E2E_BASE_URL` is remote, the config skips the `webServer` block and does not start a local dev server.
+In CI the same spec files run against the demo URL. GitHub secrets populate the `E2E_*` vars — point `E2E_BASE_URL` at `https://demo.receiptwrangler.io` and supply the secret credentials. When `E2E_BASE_URL` is remote, the config skips the `webServer` block and does not start a local dev server. If `E2E_BASE_URL` is unset, `.github/workflows/e2e.yml` skips the job (so forks without demo credentials stay green).
 
 **The mobile suite shares that backend.** `.github/workflows/mobile-e2e.yml`'s `android-e2e` job reads
 the same `secrets.E2E_BASE_URL`, and both suites mutate **global** System Settings (the login-QR
