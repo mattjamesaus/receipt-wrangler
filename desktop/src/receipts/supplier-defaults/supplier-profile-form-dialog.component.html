@@ -57,6 +57,15 @@
         label="Enabled"
         [inputFormControl]="form | formGet : 'enabled'"
       ></app-checkbox>
+      <app-checkbox
+        label="Auto-apply on ingest"
+        [inputFormControl]="form | formGet : 'autoApply'"
+      ></app-checkbox>
+      <p class="text-muted small mb-3">
+        When auto-apply is on, matching receipts from email, quick scan, and new
+        receipts receive these defaults. An extracted document currency is never
+        overwritten.
+      </p>
     </div>
 
     <app-dialog-footer

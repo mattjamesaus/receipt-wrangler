@@ -25,6 +25,7 @@ part 'supplier_profile.g.dart';
 /// * [normalisedName] - Normalised canonical name used for matching
 /// * [expectedDocumentCurrencyCode] - Optional expected ISO 4217 document currency
 /// * [enabled] - Disabled profiles remain stored but do not match
+/// * [autoApply] - When true, matching receipts created via email, quick scan, or the create-receipt API receive these defaults automatically. Extracted document currency is never overwritten.
 /// * [categories] 
 /// * [tags] 
 /// * [aliases] 
@@ -63,6 +64,10 @@ abstract class SupplierProfile implements Built<SupplierProfile, SupplierProfile
   /// Disabled profiles remain stored but do not match
   @BuiltValueField(wireName: r'enabled')
   bool? get enabled;
+
+  /// When true, matching receipts created via email, quick scan, or the create-receipt API receive these defaults automatically. Extracted document currency is never overwritten.
+  @BuiltValueField(wireName: r'autoApply')
+  bool? get autoApply;
 
   @BuiltValueField(wireName: r'categories')
   BuiltList<Category>? get categories;
@@ -163,6 +168,13 @@ class _$SupplierProfileSerializer implements PrimitiveSerializer<SupplierProfile
       yield r'enabled';
       yield serializers.serialize(
         object.enabled,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.autoApply != null) {
+      yield r'autoApply';
+      yield serializers.serialize(
+        object.autoApply,
         specifiedType: const FullType(bool),
       );
     }
@@ -279,6 +291,13 @@ class _$SupplierProfileSerializer implements PrimitiveSerializer<SupplierProfile
             specifiedType: const FullType(bool),
           ) as bool;
           result.enabled = valueDes;
+          break;
+        case r'autoApply':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.autoApply = valueDes;
           break;
         case r'categories':
           final valueDes = serializers.deserialize(

@@ -18,6 +18,7 @@ part 'upsert_supplier_profile_command.g.dart';
 /// * [tagIds] - Default tag ids from the catalogue
 /// * [expectedDocumentCurrencyCode] - Optional expected ISO 4217 document currency
 /// * [enabled] - Whether the profile participates in matching. Defaults to true on create.
+/// * [autoApply] - When true, matching ingested receipts receive these defaults automatically. Defaults to false on create.
 @BuiltValue()
 abstract class UpsertSupplierProfileCommand implements Built<UpsertSupplierProfileCommand, UpsertSupplierProfileCommandBuilder> {
   /// Canonical supplier display name
@@ -43,6 +44,10 @@ abstract class UpsertSupplierProfileCommand implements Built<UpsertSupplierProfi
   /// Whether the profile participates in matching. Defaults to true on create.
   @BuiltValueField(wireName: r'enabled')
   bool? get enabled;
+
+  /// When true, matching ingested receipts receive these defaults automatically. Defaults to false on create.
+  @BuiltValueField(wireName: r'autoApply')
+  bool? get autoApply;
 
   UpsertSupplierProfileCommand._();
 
@@ -104,6 +109,13 @@ class _$UpsertSupplierProfileCommandSerializer implements PrimitiveSerializer<Up
       yield r'enabled';
       yield serializers.serialize(
         object.enabled,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.autoApply != null) {
+      yield r'autoApply';
+      yield serializers.serialize(
+        object.autoApply,
         specifiedType: const FullType(bool),
       );
     }
@@ -171,6 +183,13 @@ class _$UpsertSupplierProfileCommandSerializer implements PrimitiveSerializer<Up
             specifiedType: const FullType(bool),
           ) as bool;
           result.enabled = valueDes;
+          break;
+        case r'autoApply':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.autoApply = valueDes;
           break;
         default:
           unhandled.add(key);

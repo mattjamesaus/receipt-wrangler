@@ -148,6 +148,8 @@ export class ReceiptFormComponent implements OnInit {
 
   public currencyIsExtracted = signal(false);
 
+  public magicFillApplied = signal(false);
+
   public selectedGroup = signal<Group | undefined>(undefined);
 
   public editLink = "";
@@ -485,6 +487,7 @@ export class ReceiptFormComponent implements OnInit {
     this.listenForSyncWithItemsChanges();
     this.listenForSupplierDefaults();
     this.currencyIsExtracted.set(!!this.originalReceipt);
+    this.magicFillApplied.set(false);
   }
 
   // Source the category/tag pickers from the selected group's AppData catalog
@@ -657,6 +660,7 @@ export class ReceiptFormComponent implements OnInit {
 
   private patchMagicValues(magicReceipt: Receipt): void {
     this.currencyIsExtracted.set(true);
+    this.magicFillApplied.set(true);
     // A field is only reported as filled when it actually changes the form, so
     // an empty/unmatched value never claims a phantom fill. Scalars come first,
     // then each association through the form's existing builders (amount is

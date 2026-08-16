@@ -8,7 +8,7 @@ import { Category, SupplierProfile, SupplierProfileService, Tag } from "../../op
 import { SnackbarService } from "../../services";
 import { ReviewSuggestionsDialogComponent, ReviewSuggestionsDialogData } from "./review-suggestions-dialog.component";
 import { SupplierProfileFormDialogComponent, SupplierProfileFormDialogData } from "./supplier-profile-form-dialog.component";
-import { profileHasVisibleDefaults, supplierApplyConfirmation } from "./supplier-profile.utils";
+import { applySupplierSuggestions, profileHasVisibleDefaults, shouldAutoApplyCurrency, supplierApplyConfirmation } from "./supplier-profile.utils";
 
 @Component({
   selector: "app-supplier-suggestions-row",
@@ -31,6 +31,8 @@ export class SupplierSuggestionsRowComponent {
 
   public readonly currencyIsExtracted = input(false);
 
+  public readonly allowAutoApply = input(false);
+
   public readonly profileSaved = output<void>();
 
   public readonly matchedProfile = signal<SupplierProfile | null>(null);
@@ -43,6 +45,8 @@ export class SupplierSuggestionsRowComponent {
     const profile = this.matchedProfile();
     return !!profile && profileHasVisibleDefaults(profile);
   });
+
+  private lastAutoAppliedProfileId: number | null = null;
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -74,7 +78,9 @@ export class SupplierSuggestionsRowComponent {
       )
       .subscribe((response) => {
         this.resolving.set(false);
-        this.matchedProfile.set(response?.profile ?? null);
+        const profile = response?.profile ?? null;
+        this.matchedProfile.set(profile);
+        this.maybeAutoApply(profile);
       });
   }
 
@@ -149,6 +155,38 @@ export class SupplierSuggestionsRowComponent {
         this.refreshMatch();
       }
     });
+  }
+
+  private maybeAutoApply(profile: SupplierProfile | null): void {
+    if (
+      !profile?.autoApply ||
+      !this.allowAutoApply() ||
+      this.readonly() ||
+      !this.canApply() ||
+      !profileHasVisibleDefaults(profile)
+    ) {
+      return;
+    }
+    if (profile.id != null && this.lastAutoAppliedProfileId === profile.id) {
+      return;
+    }
+
+    const currentCurrency = this.form().get("documentCurrencyCode")?.value ?? "";
+    const applyCurrency = shouldAutoApplyCurrency(
+      profile.expectedDocumentCurrencyCode,
+      currentCurrency,
+      this.currencyIsExtracted()
+    );
+    const applied = applySupplierSuggestions(
+      this.currentCategories(),
+      this.currentTags(),
+      currentCurrency,
+      profile.categories ?? [],
+      profile.tags ?? [],
+      applyCurrency ? profile.expectedDocumentCurrencyCode : undefined
+    );
+    this.patchForm(applied.categories, applied.tags, applied.documentCurrencyCode);
+    this.lastAutoAppliedProfileId = profile.id ?? null;
   }
 
   private refreshMatch(): void {

@@ -34,5 +34,9 @@ export interface UpsertSupplierProfileCommand {
      * Whether the profile participates in matching. Defaults to true on create.
      */
     enabled?: boolean;
+    /**
+     * When true, matching ingested receipts receive these defaults automatically. Defaults to false on create.
+     */
+    autoApply?: boolean;
 }
 

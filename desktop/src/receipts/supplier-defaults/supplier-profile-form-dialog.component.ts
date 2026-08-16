@@ -112,6 +112,7 @@ export class SupplierProfileFormDialogComponent implements OnInit {
       expectedDocumentCurrencyCode:
         this.form.value.expectedDocumentCurrencyCode || undefined,
       enabled: this.form.value.enabled,
+      autoApply: this.form.value.autoApply,
     };
 
     const request = this.data.profile?.id
@@ -176,6 +177,7 @@ export class SupplierProfileFormDialogComponent implements OnInit {
           Validators.pattern(/^[A-Za-z]{3}$/),
         ],
         enabled: [profile?.enabled ?? true],
+        autoApply: [profile?.autoApply ?? false],
       },
       { validators: [atLeastOneSupplierDefault] }
     );

@@ -68,6 +68,7 @@ describe("SupplierProfileFormDialogComponent", () => {
       categoryIds: [1],
       expectedDocumentCurrencyCode: "USD",
       enabled: true,
+      autoApply: false,
     }));
   });
 });

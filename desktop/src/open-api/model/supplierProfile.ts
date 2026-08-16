@@ -38,6 +38,10 @@ export interface SupplierProfile {
      * Disabled profiles remain stored but do not match
      */
     enabled?: boolean;
+    /**
+     * When true, matching receipts created via email, quick scan, or the create-receipt API receive these defaults automatically. Extracted document currency is never overwritten.
+     */
+    autoApply?: boolean;
     categories?: Array<Category>;
     tags?: Array<Tag>;
     aliases?: Array<SupplierProfileAlias>;

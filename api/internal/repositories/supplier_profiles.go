@@ -182,20 +182,25 @@ func (repository SupplierProfileRepository) Create(profile models.SupplierProfil
 		categories := profile.Categories
 		tags := profile.Tags
 		enabled := profile.Enabled
+		autoApply := profile.AutoApply
 		profile.Aliases = nil
 		profile.Categories = nil
 		profile.Tags = nil
 		if err := tx.Omit("Categories", "Tags", "Aliases").Create(&profile).Error; err != nil {
 			return err
 		}
-		// GORM omits the false zero-value on Create, so a disabled profile
-		// would otherwise keep the column default of true.
+		// GORM omits false zero-values on Create, so Enabled/AutoApply must be
+		// written explicitly after insert.
 		if err := tx.Model(&models.SupplierProfile{}).
 			Where("id = ?", profile.ID).
-			Update("enabled", enabled).Error; err != nil {
+			Updates(map[string]interface{}{
+				"enabled":    enabled,
+				"auto_apply": autoApply,
+			}).Error; err != nil {
 			return err
 		}
 		profile.Enabled = enabled
+		profile.AutoApply = autoApply
 		for i := range aliases {
 			aliases[i].SupplierProfileId = profile.ID
 			aliases[i].GroupId = profile.GroupId
@@ -233,6 +238,7 @@ func (repository SupplierProfileRepository) Update(profile models.SupplierProfil
 			"normalised_name":                 profile.NormalisedName,
 			"expected_document_currency_code": profile.ExpectedDocumentCurrencyCode,
 			"enabled":                         profile.Enabled,
+			"auto_apply":                      profile.AutoApply,
 		}).Error; err != nil {
 			return err
 		}

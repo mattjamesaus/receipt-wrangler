@@ -1,4 +1,4 @@
-import { applySupplierSuggestions, mergeCatalogItems, profileHasVisibleDefaults, supplierApplyConfirmation } from "./supplier-profile.utils";
+import { applySupplierSuggestions, mergeCatalogItems, profileHasVisibleDefaults, shouldAutoApplyCurrency, supplierApplyConfirmation } from "./supplier-profile.utils";
 
 describe("supplier-profile.utils", () => {
   it("merges additions without removing existing items", () => {
@@ -44,5 +44,13 @@ describe("supplier-profile.utils", () => {
   it("treats a currency-only profile as having visible defaults", () => {
     expect(profileHasVisibleDefaults({ expectedDocumentCurrencyCode: "USD" })).toBe(true);
     expect(profileHasVisibleDefaults({ categories: [], tags: [] })).toBe(false);
+  });
+
+  it("auto-applies currency only when it would not overwrite extracted evidence", () => {
+    expect(shouldAutoApplyCurrency("USD", "", false)).toBe(true);
+    expect(shouldAutoApplyCurrency("USD", "AUD", false)).toBe(true);
+    expect(shouldAutoApplyCurrency("USD", "AUD", true)).toBe(false);
+    expect(shouldAutoApplyCurrency("USD", "USD", false)).toBe(false);
+    expect(shouldAutoApplyCurrency(undefined, "AUD", false)).toBe(false);
   });
 });

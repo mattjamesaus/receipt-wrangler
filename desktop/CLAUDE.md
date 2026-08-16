@@ -967,8 +967,8 @@ helpers `withAdminApi` + `apiDeleteUserByName` / `apiDeleteGroupById` / `apiDele
 
 Group-scoped **supplier profiles** remember optional receipt-review defaults
 (categories, tags, expected document currency) for a recognised merchant name.
-They are **suggestions only** — Magic Fill, email intake, and Quick Scan never
-auto-apply them. See GitHub issue #5 and `api/CLAUDE.md` → "Supplier Profiles".
+They are **suggestions** unless a profile has **Auto-apply on ingest** enabled.
+See GitHub issue #5 and `api/CLAUDE.md` → "Supplier Profiles".
 
 - **Manage page:** `/receipts/group/:groupId/supplier-defaults`
   (`SupplierDefaultsListComponent`) lists the selected group's profiles. Reach it
@@ -977,13 +977,15 @@ auto-apply them. See GitHub issue #5 and `api/CLAUDE.md` → "Supplier Profiles"
   `group.receipts.update` (no dedicated permission in this slice).
 - **Create/edit dialog:** `SupplierProfileFormDialogComponent` — name, aliases,
   category/tag FormArrays (`[creatable]="false"`, sourced from
-  `AuthState.groupCategories` / `groupTags`), expected ISO 4217 currency, enabled.
-  At least one default is required. Saving a profile from a receipt does **not**
-  mutate that receipt.
+  `AuthState.groupCategories` / `groupTags`), expected ISO 4217 currency, enabled,
+  and auto-apply. At least one default is required. Saving a profile from a
+  receipt does **not** mutate that receipt.
 - **Receipt form:** `app-supplier-suggestions-row` sits directly under **Name**.
   It debounces the name and calls `SupplierProfileService.resolveSupplierProfile`.
   No match → “No supplier defaults” + **Save as supplier defaults…** (manage
-  permission). Match → **Review suggestions** (apply) and **Manage**.
+  permission). Match → **Review suggestions** (apply) and **Manage**. When the
+  profile has `autoApply` and the form is a new receipt (or just Magic Filled),
+  visible defaults are applied once automatically; an extracted currency is kept.
 - **Review dialog:** merges selected categories/tags into the unsaved form
   (never removes existing selections, including hidden grant associations already
   on the FormArray). A currency conflict leaves the profile currency unchecked

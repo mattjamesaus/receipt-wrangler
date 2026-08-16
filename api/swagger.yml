@@ -4191,6 +4191,12 @@ components:
         enabled:
           type: boolean
           description: Disabled profiles remain stored but do not match
+        autoApply:
+          type: boolean
+          description: >-
+            When true, matching receipts created via email, quick scan, or the
+            create-receipt API receive these defaults automatically. Extracted
+            document currency is never overwritten.
         categories:
           type: array
           items:
@@ -4205,7 +4211,7 @@ components:
             $ref: "#/components/schemas/SupplierProfileAlias"
       description: >-
         Group-scoped supplier profile that stores optional receipt-review
-        defaults. A profile is a suggestion, never an automatic classification.
+        defaults. Defaults are suggestions unless autoApply is enabled.
     UpsertSupplierProfileCommand:
       required:
         - name
@@ -4238,6 +4244,11 @@ components:
         enabled:
           type: boolean
           description: Whether the profile participates in matching. Defaults to true on create.
+        autoApply:
+          type: boolean
+          description: >-
+            When true, matching ingested receipts receive these defaults
+            automatically. Defaults to false on create.
     ResolveSupplierProfileCommand:
       required:
         - name

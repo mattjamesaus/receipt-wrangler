@@ -7,6 +7,7 @@ type SupplierProfile struct {
 	NormalisedName               string                 `gorm:"not null;uniqueIndex:idx_supplier_profile_group_norm" json:"normalisedName"`
 	ExpectedDocumentCurrencyCode *string                `gorm:"type:char(3)" json:"expectedDocumentCurrencyCode"`
 	Enabled                      bool                   `gorm:"not null;default:true" json:"enabled"`
+	AutoApply                    bool                   `gorm:"not null;default:false" json:"autoApply"`
 	Categories                   []Category             `gorm:"many2many:supplier_profile_categories" json:"categories"`
 	Tags                         []Tag                  `gorm:"many2many:supplier_profile_tags" json:"tags"`
 	Aliases                      []SupplierProfileAlias `gorm:"constraint:OnDelete:CASCADE" json:"aliases"`

@@ -18,6 +18,7 @@ type UpsertSupplierProfileCommand struct {
 	TagIds                       []uint   `json:"tagIds"`
 	ExpectedDocumentCurrencyCode *string  `json:"expectedDocumentCurrencyCode"`
 	Enabled                      *bool    `json:"enabled"`
+	AutoApply                    *bool    `json:"autoApply"`
 }
 
 func (command *UpsertSupplierProfileCommand) LoadDataFromRequest(w http.ResponseWriter, r *http.Request) error {

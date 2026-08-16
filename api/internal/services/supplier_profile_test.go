@@ -314,3 +314,80 @@ func TestSupplierProfileService_CategoryDeleteUnlinks(t *testing.T) {
 		t.Fatalf("expected tag to remain, got %#v", reloaded.Tags)
 	}
 }
+
+func TestSupplierProfileService_ApplyAutoDefaults(t *testing.T) {
+	defer tearDownSupplierProfileServiceTest()
+	userId, groupId, category, tag := seedSupplierGroup(t)
+	service := NewSupplierProfileService(nil)
+	currency := "USD"
+	autoApply := true
+
+	_, vErr, err := service.Create(userId, groupId, commands.UpsertSupplierProfileCommand{
+		Name:                         "GitHub",
+		Aliases:                      []string{"GitHub, Inc."},
+		CategoryIds:                  []uint{category.ID},
+		TagIds:                       []uint{tag.ID},
+		ExpectedDocumentCurrencyCode: &currency,
+		AutoApply:                    &autoApply,
+	})
+	if err != nil || len(vErr.Errors) > 0 {
+		t.Fatalf("create: %v %#v", err, vErr.Errors)
+	}
+
+	existingTag := models.Tag{Name: "Personal"}
+	if err := repositories.GetDB().Create(&existingTag).Error; err != nil {
+		t.Fatalf("create existing tag: %v", err)
+	}
+	existingTagId := existingTag.ID
+
+	command := commands.UpsertReceiptCommand{
+		Name:                 "GitHub, Inc.",
+		GroupId:              groupId,
+		DocumentCurrencyCode: "AUD",
+		Tags: []commands.UpsertTagCommand{
+			{Id: &existingTagId, Name: existingTag.Name},
+		},
+	}
+	if err := service.ApplyAutoDefaults(userId, &command); err != nil {
+		t.Fatalf("apply: %v", err)
+	}
+	if len(command.Categories) != 1 || command.Categories[0].Name != category.Name {
+		t.Fatalf("expected profile category merged, got %#v", command.Categories)
+	}
+	if len(command.Tags) != 2 {
+		t.Fatalf("expected existing tag kept and profile tag added, got %#v", command.Tags)
+	}
+	if command.DocumentCurrencyCode != "AUD" {
+		t.Fatalf("extracted currency must win, got %q", command.DocumentCurrencyCode)
+	}
+
+	emptyCurrency := commands.UpsertReceiptCommand{Name: "GitHub", GroupId: groupId}
+	if err := service.ApplyAutoDefaults(userId, &emptyCurrency); err != nil {
+		t.Fatalf("apply empty currency: %v", err)
+	}
+	if emptyCurrency.DocumentCurrencyCode != "USD" {
+		t.Fatalf("expected profile currency when none extracted, got %q", emptyCurrency.DocumentCurrencyCode)
+	}
+}
+
+func TestSupplierProfileService_ApplyAutoDefaultsSkippedWhenDisabled(t *testing.T) {
+	defer tearDownSupplierProfileServiceTest()
+	userId, groupId, category, _ := seedSupplierGroup(t)
+	service := NewSupplierProfileService(nil)
+
+	_, vErr, err := service.Create(userId, groupId, commands.UpsertSupplierProfileCommand{
+		Name:        "GitHub",
+		CategoryIds: []uint{category.ID},
+	})
+	if err != nil || len(vErr.Errors) > 0 {
+		t.Fatalf("create: %v %#v", err, vErr.Errors)
+	}
+
+	command := commands.UpsertReceiptCommand{Name: "GitHub", GroupId: groupId}
+	if err := service.ApplyAutoDefaults(userId, &command); err != nil {
+		t.Fatalf("apply: %v", err)
+	}
+	if len(command.Categories) != 0 {
+		t.Fatalf("autoApply defaults to off, got %#v", command.Categories)
+	}
+}

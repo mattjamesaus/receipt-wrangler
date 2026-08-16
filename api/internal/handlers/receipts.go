@@ -172,6 +172,11 @@ func CreateReceipt(w http.ResponseWriter, r *http.Request) {
 		utils.WriteCustomErrorResponse(w, errMessage, http.StatusInternalServerError)
 		return
 	}
+	if err = services.NewSupplierProfileService(nil).ApplyAutoDefaults(token.UserId, &command); err != nil {
+		logging.LogStd(logging.LOG_LEVEL_ERROR, err.Error())
+		utils.WriteCustomErrorResponse(w, errMessage, http.StatusInternalServerError)
+		return
+	}
 	vErrs := command.Validate(token.UserId, true)
 	if len(vErrs.Errors) > 0 {
 		structs.WriteValidatorErrorResponse(w, vErrs, http.StatusInternalServerError)

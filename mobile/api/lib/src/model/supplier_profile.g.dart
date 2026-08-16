@@ -28,6 +28,8 @@ class _$SupplierProfile extends SupplierProfile {
   @override
   final bool? enabled;
   @override
+  final bool? autoApply;
+  @override
   final BuiltList<Category>? categories;
   @override
   final BuiltList<Tag>? tags;
@@ -48,6 +50,7 @@ class _$SupplierProfile extends SupplierProfile {
       this.normalisedName,
       this.expectedDocumentCurrencyCode,
       this.enabled,
+      this.autoApply,
       this.categories,
       this.tags,
       this.aliases})
@@ -73,6 +76,7 @@ class _$SupplierProfile extends SupplierProfile {
         normalisedName == other.normalisedName &&
         expectedDocumentCurrencyCode == other.expectedDocumentCurrencyCode &&
         enabled == other.enabled &&
+        autoApply == other.autoApply &&
         categories == other.categories &&
         tags == other.tags &&
         aliases == other.aliases;
@@ -91,6 +95,7 @@ class _$SupplierProfile extends SupplierProfile {
     _$hash = $jc(_$hash, normalisedName.hashCode);
     _$hash = $jc(_$hash, expectedDocumentCurrencyCode.hashCode);
     _$hash = $jc(_$hash, enabled.hashCode);
+    _$hash = $jc(_$hash, autoApply.hashCode);
     _$hash = $jc(_$hash, categories.hashCode);
     _$hash = $jc(_$hash, tags.hashCode);
     _$hash = $jc(_$hash, aliases.hashCode);
@@ -111,6 +116,7 @@ class _$SupplierProfile extends SupplierProfile {
           ..add('normalisedName', normalisedName)
           ..add('expectedDocumentCurrencyCode', expectedDocumentCurrencyCode)
           ..add('enabled', enabled)
+          ..add('autoApply', autoApply)
           ..add('categories', categories)
           ..add('tags', tags)
           ..add('aliases', aliases))
@@ -166,6 +172,10 @@ class SupplierProfileBuilder
   bool? get enabled => _$this._enabled;
   set enabled(bool? enabled) => _$this._enabled = enabled;
 
+  bool? _autoApply;
+  bool? get autoApply => _$this._autoApply;
+  set autoApply(bool? autoApply) => _$this._autoApply = autoApply;
+
   ListBuilder<Category>? _categories;
   ListBuilder<Category> get categories =>
       _$this._categories ??= ListBuilder<Category>();
@@ -199,6 +209,7 @@ class SupplierProfileBuilder
       _normalisedName = $v.normalisedName;
       _expectedDocumentCurrencyCode = $v.expectedDocumentCurrencyCode;
       _enabled = $v.enabled;
+      _autoApply = $v.autoApply;
       _categories = $v.categories?.toBuilder();
       _tags = $v.tags?.toBuilder();
       _aliases = $v.aliases?.toBuilder();
@@ -235,6 +246,7 @@ class SupplierProfileBuilder
             normalisedName: normalisedName,
             expectedDocumentCurrencyCode: expectedDocumentCurrencyCode,
             enabled: enabled,
+            autoApply: autoApply,
             categories: _categories?.build(),
             tags: _tags?.build(),
             aliases: _aliases?.build(),

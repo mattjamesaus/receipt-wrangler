@@ -33,6 +33,7 @@
 <ng-template #tagsCell let-element="element">{{ names(element.tags) }}</ng-template>
 <ng-template #aliasesCell let-element="element">{{ aliasNames(element) }}</ng-template>
 <ng-template #enabledCell let-element="element">{{ element.enabled ? "Enabled" : "Disabled" }}</ng-template>
+<ng-template #autoApplyCell let-element="element">{{ element.autoApply ? "On" : "Off" }}</ng-template>
 <ng-template #updatedCell let-element="element">{{ element.updatedAt | date }}</ng-template>
 <ng-template #actionsCell let-element="element">
   @if (canManage) {

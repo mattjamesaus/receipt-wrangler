@@ -19,6 +19,8 @@ class _$UpsertSupplierProfileCommand extends UpsertSupplierProfileCommand {
   final String? expectedDocumentCurrencyCode;
   @override
   final bool? enabled;
+  @override
+  final bool? autoApply;
 
   factory _$UpsertSupplierProfileCommand(
           [void Function(UpsertSupplierProfileCommandBuilder)? updates]) =>
@@ -30,7 +32,8 @@ class _$UpsertSupplierProfileCommand extends UpsertSupplierProfileCommand {
       this.categoryIds,
       this.tagIds,
       this.expectedDocumentCurrencyCode,
-      this.enabled})
+      this.enabled,
+      this.autoApply})
       : super._();
   @override
   UpsertSupplierProfileCommand rebuild(
@@ -50,7 +53,8 @@ class _$UpsertSupplierProfileCommand extends UpsertSupplierProfileCommand {
         categoryIds == other.categoryIds &&
         tagIds == other.tagIds &&
         expectedDocumentCurrencyCode == other.expectedDocumentCurrencyCode &&
-        enabled == other.enabled;
+        enabled == other.enabled &&
+        autoApply == other.autoApply;
   }
 
   @override
@@ -62,6 +66,7 @@ class _$UpsertSupplierProfileCommand extends UpsertSupplierProfileCommand {
     _$hash = $jc(_$hash, tagIds.hashCode);
     _$hash = $jc(_$hash, expectedDocumentCurrencyCode.hashCode);
     _$hash = $jc(_$hash, enabled.hashCode);
+    _$hash = $jc(_$hash, autoApply.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -74,7 +79,8 @@ class _$UpsertSupplierProfileCommand extends UpsertSupplierProfileCommand {
           ..add('categoryIds', categoryIds)
           ..add('tagIds', tagIds)
           ..add('expectedDocumentCurrencyCode', expectedDocumentCurrencyCode)
-          ..add('enabled', enabled))
+          ..add('enabled', enabled)
+          ..add('autoApply', autoApply))
         .toString();
   }
 }
@@ -113,6 +119,10 @@ class UpsertSupplierProfileCommandBuilder
   bool? get enabled => _$this._enabled;
   set enabled(bool? enabled) => _$this._enabled = enabled;
 
+  bool? _autoApply;
+  bool? get autoApply => _$this._autoApply;
+  set autoApply(bool? autoApply) => _$this._autoApply = autoApply;
+
   UpsertSupplierProfileCommandBuilder() {
     UpsertSupplierProfileCommand._defaults(this);
   }
@@ -126,6 +136,7 @@ class UpsertSupplierProfileCommandBuilder
       _tagIds = $v.tagIds?.toBuilder();
       _expectedDocumentCurrencyCode = $v.expectedDocumentCurrencyCode;
       _enabled = $v.enabled;
+      _autoApply = $v.autoApply;
       _$v = null;
     }
     return this;
@@ -156,6 +167,7 @@ class UpsertSupplierProfileCommandBuilder
             tagIds: _tagIds?.build(),
             expectedDocumentCurrencyCode: expectedDocumentCurrencyCode,
             enabled: enabled,
+            autoApply: autoApply,
           );
     } catch (_) {
       late String _$failedField;

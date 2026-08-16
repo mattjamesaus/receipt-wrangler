@@ -44,6 +44,7 @@
               [canApply]="canApplySupplierSuggestions()"
               [readonly]="mode | inputReadonly"
               [currencyIsExtracted]="currencyIsExtracted()"
+              [allowAutoApply]="mode === formMode.add || magicFillApplied()"
             ></app-supplier-suggestions-row>
             <div class="d-flex align-items-center w-100">
               <app-input

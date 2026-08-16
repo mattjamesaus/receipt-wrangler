@@ -1,7 +1,12 @@
 @if (hasName()) {
   <div class="supplier-defaults-row w-100 mb-3" data-testid="supplier-defaults-row">
     @if (matchedProfile(); as profile) {
-      <span>Supplier defaults: {{ profile.name }}</span>
+      <span>
+        Supplier defaults: {{ profile.name }}
+        @if (profile.autoApply) {
+          (auto-apply)
+        }
+      </span>
       @if (!readonly() && canApply() && hasVisibleDefaults()) {
         <app-button
           data-testid="review-supplier-suggestions"

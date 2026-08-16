@@ -129,6 +129,35 @@ func (service SupplierProfileService) Delete(groupId uint, profileId uint) error
 	return repositories.NewSupplierProfileRepository(service.TX).Delete(profileId, groupId)
 }
 
+// ApplyAutoDefaults merges an auto-apply supplier profile into a receipt
+// command about to be created. Categories and tags are added without removing
+// existing selections. Expected currency is applied only when the command has
+// no document currency — an extracted or caller-supplied value wins.
+func (service SupplierProfileService) ApplyAutoDefaults(userId uint, command *commands.UpsertReceiptCommand) error {
+	if command == nil || command.GroupId == 0 || len(strings.TrimSpace(command.Name)) == 0 {
+		return nil
+	}
+
+	profile, err := service.Resolve(userId, command.GroupId, command.Name)
+	if err != nil {
+		return err
+	}
+	if profile == nil || !profile.AutoApply {
+		return nil
+	}
+
+	command.Categories = mergeCategoryCommands(command.Categories, profile.Categories)
+	command.Tags = mergeTagCommands(command.Tags, profile.Tags)
+
+	if len(strings.TrimSpace(command.DocumentCurrencyCode)) == 0 &&
+		profile.ExpectedDocumentCurrencyCode != nil &&
+		len(strings.TrimSpace(*profile.ExpectedDocumentCurrencyCode)) > 0 {
+		command.DocumentCurrencyCode = strings.ToUpper(strings.TrimSpace(*profile.ExpectedDocumentCurrencyCode))
+	}
+
+	return nil
+}
+
 func (service SupplierProfileService) buildProfile(userId uint, groupId uint, excludeProfileId uint, command commands.UpsertSupplierProfileCommand) (models.SupplierProfile, structs.ValidatorError, error) {
 	vErr := structs.ValidatorError{Errors: map[string]string{}}
 
@@ -171,6 +200,10 @@ func (service SupplierProfileService) buildProfile(userId uint, groupId uint, ex
 	if command.Enabled != nil {
 		enabled = *command.Enabled
 	}
+	autoApply := false
+	if command.AutoApply != nil {
+		autoApply = *command.AutoApply
+	}
 
 	profileAliases := make([]models.SupplierProfileAlias, 0, len(aliases))
 	for _, alias := range aliases {
@@ -187,6 +220,7 @@ func (service SupplierProfileService) buildProfile(userId uint, groupId uint, ex
 		NormalisedName:               normalisedName,
 		ExpectedDocumentCurrencyCode: command.ExpectedDocumentCurrencyCode,
 		Enabled:                      enabled,
+		AutoApply:                    autoApply,
 		Categories:                   categories,
 		Tags:                         tags,
 		Aliases:                      profileAliases,
@@ -303,6 +337,50 @@ func collisionOrError(err error) (structs.ValidatorError, error) {
 		}}, nil
 	}
 	return structs.ValidatorError{}, err
+}
+
+func mergeCategoryCommands(existing []commands.UpsertCategoryCommand, additions []models.Category) []commands.UpsertCategoryCommand {
+	seen := make(map[uint]struct{}, len(existing))
+	for _, category := range existing {
+		if category.Id != nil {
+			seen[*category.Id] = struct{}{}
+		}
+	}
+	result := append([]commands.UpsertCategoryCommand{}, existing...)
+	for _, category := range additions {
+		if _, exists := seen[category.ID]; exists {
+			continue
+		}
+		id := category.ID
+		result = append(result, commands.UpsertCategoryCommand{
+			Id:          &id,
+			Name:        category.Name,
+			Description: category.Description,
+		})
+	}
+	return result
+}
+
+func mergeTagCommands(existing []commands.UpsertTagCommand, additions []models.Tag) []commands.UpsertTagCommand {
+	seen := make(map[uint]struct{}, len(existing))
+	for _, tag := range existing {
+		if tag.Id != nil {
+			seen[*tag.Id] = struct{}{}
+		}
+	}
+	result := append([]commands.UpsertTagCommand{}, existing...)
+	for _, tag := range additions {
+		if _, exists := seen[tag.ID]; exists {
+			continue
+		}
+		id := tag.ID
+		result = append(result, commands.UpsertTagCommand{
+			Id:          &id,
+			Name:        tag.Name,
+			Description: tag.Description,
+		})
+	}
+	return result
 }
 
 func uniqueUintIds(ids []uint) []uint {

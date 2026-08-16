@@ -54,6 +54,30 @@ describe("SupplierSuggestionsRowComponent", () => {
     expect(component.matchedProfile()?.name).toEqual("GitHub");
   });
 
+  it("auto-applies defaults once when the profile opts in", async () => {
+    (TestBed.inject(SupplierProfileService).resolveSupplierProfile as jest.Mock).mockReturnValue(
+      of({
+        profile: {
+          id: 1,
+          name: "GitHub",
+          autoApply: true,
+          categories: [{ id: 2, name: "Software" }],
+          tags: [{ id: 4, name: "Work" }],
+          expectedDocumentCurrencyCode: "USD",
+        },
+      }) as any
+    );
+    fixture.componentRef.setInput("allowAutoApply", true);
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    expect(component.form().get("categories")?.value.map((item: { name: string }) => item.name)).toEqual([
+      "Existing",
+      "Software",
+    ]);
+    expect(component.form().get("documentCurrencyCode")?.value).toEqual("USD");
+  });
+
   it("opens the save-as-defaults dialog without changing the form", () => {
     const openSpy = jest.spyOn(TestBed.inject(MatDialog), "open").mockReturnValue({
       afterClosed: () => of(false),

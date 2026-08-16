@@ -34,6 +34,8 @@ export class SupplierDefaultsListComponent implements OnInit, AfterViewInit {
 
   public readonly enabledCell = viewChild.required<TemplateRef<any>>("enabledCell");
 
+  public readonly autoApplyCell = viewChild.required<TemplateRef<any>>("autoApplyCell");
+
   public readonly updatedCell = viewChild.required<TemplateRef<any>>("updatedCell");
 
   public readonly actionsCell = viewChild.required<TemplateRef<any>>("actionsCell");
@@ -120,6 +122,7 @@ export class SupplierDefaultsListComponent implements OnInit, AfterViewInit {
       { columnHeader: "Tags", matColumnDef: "tags", sortable: false, template: this.tagsCell() },
       { columnHeader: "Aliases", matColumnDef: "aliases", sortable: false, template: this.aliasesCell() },
       { columnHeader: "Enabled", matColumnDef: "enabled", sortable: false, template: this.enabledCell() },
+      { columnHeader: "Auto-apply", matColumnDef: "autoApply", sortable: false, template: this.autoApplyCell() },
       { columnHeader: "Updated", matColumnDef: "updatedAt", sortable: false, template: this.updatedCell() },
       { columnHeader: "Actions", matColumnDef: "actions", sortable: false, template: this.actionsCell() },
     ];
@@ -146,6 +149,7 @@ export class SupplierDefaultsListComponent implements OnInit, AfterViewInit {
         tagIds: (profile.tags ?? []).map((tag) => tag.id).filter((id): id is number => !!id),
         expectedDocumentCurrencyCode: profile.expectedDocumentCurrencyCode,
         enabled: !profile.enabled,
+        autoApply: profile.autoApply ?? false,
       })
       .pipe(
         take(1),

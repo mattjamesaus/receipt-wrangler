@@ -66,3 +66,22 @@ export function profileHasVisibleDefaults(profile: SupplierProfile): boolean {
     !!profile.expectedDocumentCurrencyCode
   );
 }
+
+export function shouldAutoApplyCurrency(
+  expected: string | undefined,
+  current: string,
+  currencyIsExtracted: boolean
+): boolean {
+  const wanted = (expected ?? "").trim().toUpperCase();
+  if (!wanted) {
+    return false;
+  }
+  const existing = (current ?? "").trim().toUpperCase();
+  if (!existing) {
+    return true;
+  }
+  if (existing === wanted) {
+    return false;
+  }
+  return !currencyIsExtracted;
+}

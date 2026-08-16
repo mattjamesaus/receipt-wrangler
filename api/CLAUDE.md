@@ -1218,8 +1218,10 @@ a real paid-by and status — neither field is ever null/empty**. This is why th
 
 Group-scoped **supplier profiles** remember optional receipt-review defaults for a
 recognised merchant name: categories, tags, and an expected ISO 4217 document
-currency. A profile is a **suggestion**, never an automatic classification — intake
-(Magic Fill, email, Quick Scan) must not apply defaults. See GitHub issue #5.
+currency. By default a profile is a **suggestion** — reviewers apply it explicitly.
+A per-profile **`autoApply`** flag opts that supplier into automatic defaults on
+ingest (email, quick scan, and `POST /receipt`). Extracted document currency is
+never overwritten. See GitHub issue #5.
 
 - **Models:** `SupplierProfile` + `SupplierProfileAlias` (`internal/models/supplier_profile.go`),
   plus explicit join tables `SupplierProfileCategory` / `SupplierProfileTag` with
@@ -1247,10 +1249,16 @@ currency. A profile is a **suggestion**, never an automatic classification — i
   see, so a restricted editor cannot strip them by saving the visible subset.
   A profile cannot be used to bypass catalogue grants; applying defaults still
   goes through the existing receipt write checks.
+- **Auto-apply:** `SupplierProfile.AutoApply` (default false). When a matching
+  enabled profile has it on, `ApplyAutoDefaults` merges visible categories/tags
+  into the create command and fills document currency only if the command has
+  none. Called from `CreateReceipt`, `QuickScan`, and email ingest — not from
+  receipt updates.
 - **Endpoints** (under `/api/group/{groupId}/supplierProfile`): `GET /`, `POST /`,
   `POST /resolve`, `GET|PUT|DELETE /{profileId}`. Group id always comes from the
   URL; a profile id alone never crosses group boundaries.
-- **Tests:** `services/supplier_name_test.go`, `services/supplier_profile_test.go`,
+- **Tests:** `services/supplier_name_test.go`, `services/supplier_profile_test.go`
+  (including auto-apply merge / currency-keep),
   `commands/upsert_supplier_profile_command_test.go`,
   `handlers/supplier_profiles_test.go`.
 
