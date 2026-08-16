@@ -31,12 +31,13 @@ import {
   ReceiptService,
   ReceiptStatus,
   Tag,
+  UserService,
 } from "../../open-api";
 import { CustomFieldTypePipe } from "../../pipes/custom-field-type.pipe";
 import { SnackbarService } from "../../services";
 import { QueueMode, ReceiptQueueService } from "../../services/receipt-queue.service";
 import { StatefulMenuItem } from "../../standalone/components/filtered-stateful-menu/stateful-menu-item";
-import { AuthState, FeatureConfigState, GroupState, UserState } from "../../store";
+import { AuthState, FeatureConfigState, GroupState, SetGroupCatalog, UserState } from "../../store";
 import { downloadFile } from "../../utils/file";
 import { ItemListComponent } from "../item-list/item-list.component";
 import { ReceiptCommentsComponent } from "../receipt-comments/receipt-comments.component";
@@ -200,6 +201,7 @@ export class ReceiptFormComponent implements OnInit {
     private injector: Injector,
     private snackbarService: SnackbarService,
     private store: Store,
+    private userService: UserService,
   ) {}
 
   @HostListener("window:keydown", ["$event"])
@@ -1131,6 +1133,7 @@ export class ReceiptFormComponent implements OnInit {
             of("")
           )
         ),
+        switchMap(() => this.refreshGroupCatalogs()),
         tap(() => {
           this.router.navigate([route]);
         })
@@ -1143,6 +1146,7 @@ export class ReceiptFormComponent implements OnInit {
       .updateReceipt(this.originalReceipt?.id as number, this.form.value)
       .pipe(
         take(1),
+        switchMap(() => this.refreshGroupCatalogs()),
         tap(() => {
           this.snackbarService.success("Successfully updated receipt");
 
@@ -1156,5 +1160,21 @@ export class ReceiptFormComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  /**
+   * Inline categories and tags are persisted by receipt create/update rather
+   * than by their autocomplete controls. Reload the server-filtered per-group
+   * catalogs before navigating so a reused receipt form cannot keep the
+   * pre-save options. Replacing both catalogs from AppData also preserves the
+   * selected group's visibility and permission filtering.
+   */
+  private refreshGroupCatalogs() {
+    return this.userService.getAppData().pipe(
+      switchMap((appData) => this.store.dispatch(new SetGroupCatalog(
+        appData.groupCategories ?? {},
+        appData.groupTags ?? {}
+      )))
+    );
   }
 }
