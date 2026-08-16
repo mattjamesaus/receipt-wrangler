@@ -9,8 +9,18 @@ import { customFieldResolverFn } from "../resolvers/custom-field.resolver";
 import { receiptResolverFn } from "../resolvers/receipt.resolver";
 import { ReceiptFormComponent } from "./receipt-form/receipt-form.component";
 import { ReceiptsTableComponent } from "./receipts-table/receipts-table.component";
+import { SupplierDefaultsListComponent } from "./supplier-defaults/supplier-defaults-list.component";
 
 const routes: Routes = [
+  {
+    path: "group/:groupId/supplier-defaults",
+    component: SupplierDefaultsListComponent,
+    canActivate: [GroupGuard, groupPermissionGuard],
+    data: {
+      groupGuardBasePath: `/receipts/group`,
+      groupPermission: Permission.GroupReceiptsCreate,
+    },
+  },
   {
     path: "group/:groupId",
     component: ReceiptsTableComponent,

@@ -99,11 +99,15 @@ import 'package:openapi/src/model/report_template.dart';
 import 'package:openapi/src/model/report_template_grant.dart';
 import 'package:openapi/src/model/report_template_option.dart';
 import 'package:openapi/src/model/reset_password_command.dart';
+import 'package:openapi/src/model/resolve_supplier_profile_command.dart';
+import 'package:openapi/src/model/resolve_supplier_profile_response.dart';
 import 'package:openapi/src/model/role.dart';
 import 'package:openapi/src/model/search_result.dart';
 import 'package:openapi/src/model/sign_up_command.dart';
 import 'package:openapi/src/model/sort_direction.dart';
 import 'package:openapi/src/model/subject_line_regex.dart';
+import 'package:openapi/src/model/supplier_profile.dart';
+import 'package:openapi/src/model/supplier_profile_alias.dart';
 import 'package:openapi/src/model/system_email.dart';
 import 'package:openapi/src/model/system_settings.dart';
 import 'package:openapi/src/model/system_task.dart';
@@ -131,6 +135,7 @@ import 'package:openapi/src/model/upsert_prompt_command.dart';
 import 'package:openapi/src/model/upsert_receipt_command.dart';
 import 'package:openapi/src/model/upsert_receipt_processing_settings_command.dart';
 import 'package:openapi/src/model/upsert_role_command.dart';
+import 'package:openapi/src/model/upsert_supplier_profile_command.dart';
 import 'package:openapi/src/model/upsert_system_email_command.dart';
 import 'package:openapi/src/model/upsert_system_settings_command.dart';
 import 'package:openapi/src/model/upsert_tag_command.dart';
@@ -231,11 +236,15 @@ part 'serializers.g.dart';
   ReportTemplateGrant,
   ReportTemplateOption,
   ResetPasswordCommand,
+  ResolveSupplierProfileCommand,
+  ResolveSupplierProfileResponse,
   Role,
   SearchResult,
   SignUpCommand,
   SortDirection,
   SubjectLineRegex,
+  SupplierProfile,
+  SupplierProfileAlias,
   SystemEmail,
   SystemSettings,
   SystemTask,
@@ -263,6 +272,7 @@ part 'serializers.g.dart';
   UpsertReceiptCommand,
   UpsertReceiptProcessingSettingsCommand,
   UpsertRoleCommand,
+  UpsertSupplierProfileCommand,
   UpsertSystemEmailCommand,
   UpsertSystemSettingsCommand,
   UpsertTagCommand,
@@ -291,6 +301,10 @@ Serializers serializers = (_$serializers.toBuilder()
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(Receipt)]),
         () => ListBuilder<Receipt>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(SupplierProfile)]),
+        () => ListBuilder<SupplierProfile>(),
       )
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(Role)]),

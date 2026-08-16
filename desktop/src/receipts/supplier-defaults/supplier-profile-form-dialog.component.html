@@ -1,0 +1,67 @@
+<app-dialog [headerText]="headerText">
+  <form [formGroup]="form">
+    <div class="d-flex flex-column">
+      <app-input
+        label="Supplier name"
+        [inputFormControl]="form | formGet : 'name'"
+      ></app-input>
+
+      <div class="mb-3">
+        <div class="d-flex align-items-end gap-2">
+          <app-input
+            class="flex-grow-1"
+            label="Also match these names"
+            [inputFormControl]="aliasDraft"
+          ></app-input>
+          <app-button
+            data-testid="supplier-alias-add"
+            buttonText="Add alias"
+            tooltip="Add alias"
+            color="accent"
+            (clicked)="addAlias()"
+          ></app-button>
+        </div>
+        @for (alias of aliases.controls; track $index) {
+          <div class="d-flex align-items-center justify-content-between alias-row">
+            <span>{{ alias.value }}</span>
+            <app-button
+              matButtonType="iconButton"
+              icon="close"
+              tooltip="Remove alias"
+              (clicked)="removeAlias($index)"
+            ></app-button>
+          </div>
+        }
+      </div>
+
+      <app-category-autocomplete
+        class="w-100"
+        inputId="supplier-profile-categories"
+        [inputFormControl]="form | formGet : 'categories'"
+        [categories]="categories"
+        [creatable]="false"
+      ></app-category-autocomplete>
+      <app-tag-autocomplete
+        class="w-100"
+        inputId="supplier-profile-tags"
+        [inputFormControl]="form | formGet : 'tags'"
+        [tags]="tags"
+        [creatable]="false"
+      ></app-tag-autocomplete>
+      <app-input
+        label="Expected document currency (ISO 4217)"
+        hint="An expectation for review, not a replacement for the receipt's printed currency."
+        [inputFormControl]="form | formGet : 'expectedDocumentCurrencyCode'"
+      ></app-input>
+      <app-checkbox
+        label="Enabled"
+        [inputFormControl]="form | formGet : 'enabled'"
+      ></app-checkbox>
+    </div>
+
+    <app-dialog-footer
+      (submitClicked)="submit()"
+      (cancelClicked)="closeDialog()"
+    ></app-dialog-footer>
+  </form>
+</app-dialog>

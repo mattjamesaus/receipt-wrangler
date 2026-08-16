@@ -21,6 +21,7 @@ api/receiptProcessingSettings.service.ts
 api/report.service.ts
 api/role.service.ts
 api/search.service.ts
+api/supplierProfile.service.ts
 api/systemEmail.service.ts
 api/systemSettings.service.ts
 api/systemTask.service.ts
@@ -118,11 +119,15 @@ model/reportTemplate.ts
 model/reportTemplateGrant.ts
 model/reportTemplateOption.ts
 model/resetPasswordCommand.ts
+model/resolveSupplierProfileCommand.ts
+model/resolveSupplierProfileResponse.ts
 model/role.ts
 model/searchResult.ts
 model/signUpCommand.ts
 model/sortDirection.ts
 model/subjectLineRegex.ts
+model/supplierProfile.ts
+model/supplierProfileAlias.ts
 model/systemEmail.ts
 model/systemSettings.ts
 model/systemTask.ts
@@ -150,6 +155,7 @@ model/upsertPromptCommand.ts
 model/upsertReceiptCommand.ts
 model/upsertReceiptProcessingSettingsCommand.ts
 model/upsertRoleCommand.ts
+model/upsertSupplierProfileCommand.ts
 model/upsertSystemEmailCommand.ts
 model/upsertSystemSettingsCommand.ts
 model/upsertTagCommand.ts

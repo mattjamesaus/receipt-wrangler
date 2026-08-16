@@ -25,6 +25,16 @@
       ></app-export-button>
     }
     <app-button
+      *ngIf="canCreate"
+      class="me-2"
+      data-testid="supplier-defaults"
+      icon="storefront"
+      matButtonType="iconButton"
+      tooltip="Supplier defaults"
+      color="accent"
+      [buttonRouterLink]="['/receipts/group', groupId, 'supplier-defaults']"
+    ></app-button>
+    <app-button
       class="me-2 filter-button"
       icon="filter_alt"
       matButtonType="iconButton"

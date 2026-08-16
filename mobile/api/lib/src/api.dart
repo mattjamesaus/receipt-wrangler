@@ -28,6 +28,7 @@ import 'package:openapi/src/api/receipt_processing_settings_api.dart';
 import 'package:openapi/src/api/report_api.dart';
 import 'package:openapi/src/api/role_api.dart';
 import 'package:openapi/src/api/search_api.dart';
+import 'package:openapi/src/api/supplier_profile_api.dart';
 import 'package:openapi/src/api/system_email_api.dart';
 import 'package:openapi/src/api/system_settings_api.dart';
 import 'package:openapi/src/api/system_task_api.dart';
@@ -202,6 +203,12 @@ class Openapi {
   /// by doing that all interceptors will not be executed
   SearchApi getSearchApi() {
     return SearchApi(dio, serializers);
+  }
+
+  /// Get SupplierProfileApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  SupplierProfileApi getSupplierProfileApi() {
+    return SupplierProfileApi(dio, serializers);
   }
 
   /// Get SystemEmailApi instance, base route and serializer can be overridden by a given but be careful,

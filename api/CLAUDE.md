@@ -1214,6 +1214,46 @@ a real paid-by and status — neither field is ever null/empty**. This is why th
   produced by the default prompt and aren't resolved here, so a future prompt emitting id-only item-level
   categories would hit the same validation failure.
 
+## Supplier Profiles (optional receipt defaults)
+
+Group-scoped **supplier profiles** remember optional receipt-review defaults for a
+recognised merchant name: categories, tags, and an expected ISO 4217 document
+currency. A profile is a **suggestion**, never an automatic classification — intake
+(Magic Fill, email, Quick Scan) must not apply defaults. See GitHub issue #5.
+
+- **Models:** `SupplierProfile` + `SupplierProfileAlias` (`internal/models/supplier_profile.go`),
+  plus explicit join tables `SupplierProfileCategory` / `SupplierProfileTag` with
+  `OnDelete:CASCADE` so deleting a catalogue entry unlinks the default without
+  deleting the profile. `DeleteCategory` / `DeleteTag` also clean those join rows
+  explicitly (SQLite FK safety).
+- **Matching:** `services.NormaliseSupplierName` trims, Unicode-folds, strips a
+  conservative punctuation set, and collapses whitespace. Resolve matches the
+  normalised receipt **Name** against a profile's canonical name and aliases in
+  the same group. Disabled profiles do not match. More than one enabled match is
+  treated as no match (never auto-select an ambiguous name).
+- **Collisions:** canonical names and aliases share one uniqueness space per
+  group (checked transactionally; unique indexes back it). A name may resolve to
+  at most one enabled profile.
+- **Permissions (this slice):** list / get / resolve require `group.receipts.create`;
+  create / update (including enable/disable) / delete require `group.receipts.update`.
+  **No new permission key** was added — keep `SupplierProfileService` as the
+  boundary so a dedicated supplier-defaults permission can be introduced later
+  without rewriting handlers. Documented here so role authors know the current
+  gate is the receipt update permission.
+- **Grants:** create/update validate category/tag ids with
+  `ValidateCategoryTagSelection`. List/get/resolve responses filter categories
+  and tags through `GetVisibleCategoriesForUser` / `GetVisibleTagsForUser`.
+  Update also **re-attaches hidden** category/tag defaults the caller cannot
+  see, so a restricted editor cannot strip them by saving the visible subset.
+  A profile cannot be used to bypass catalogue grants; applying defaults still
+  goes through the existing receipt write checks.
+- **Endpoints** (under `/api/group/{groupId}/supplierProfile`): `GET /`, `POST /`,
+  `POST /resolve`, `GET|PUT|DELETE /{profileId}`. Group id always comes from the
+  URL; a profile id alone never crosses group boundaries.
+- **Tests:** `services/supplier_name_test.go`, `services/supplier_profile_test.go`,
+  `commands/upsert_supplier_profile_command_test.go`,
+  `handlers/supplier_profiles_test.go`.
+
 ## Reporting Engine (`internal/reporting`)
 
 A **pure** report engine: `(ReportSpec + FieldCatalog + []Row + MetaInput) → ReportModel`. It
