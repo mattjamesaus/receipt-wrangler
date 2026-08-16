@@ -15,7 +15,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Secrets are empty strings when unset, so a missing E2E_BASE_URL becomes
+  # a relative "/api" URL and the suite fails with "No host specified".
+  # Skip rather than fail on forks that do not configure the demo backend.
+  check-e2e-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+        run: |
+          if [ -n "$E2E_BASE_URL" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping Playwright e2e: repository secret E2E_BASE_URL is not set"
+          fi
+
   e2e:
+    needs: check-e2e-secrets
+    if: needs.check-e2e-secrets.outputs.configured == 'true'
     runs-on: ubuntu-latest
     # This job and mobile-e2e.yml's android-e2e job drive the SAME backend
     # (secrets.E2E_BASE_URL) and both mutate global System Settings -- e.g. the

@@ -686,7 +686,7 @@ End-to-end tests live in `integration_test/` (sibling of `test/`) and use Flutte
 - **Local Android emulator** via `./run-e2e-android.sh` (macOS, auto-boots an AVD).
 - **Local iOS Simulator** via `./run-e2e-ios.sh` (macOS, auto-boots a sim).
 - **Local Linux desktop** via `./run-e2e.sh` (containers/CI Linux). Originally the primary target; kept for the dev container's headless flow.
-- **CI Android + iOS** via `.github/workflows/mobile-e2e.yml`, currently **advisory** (`continue-on-error: true`). Triggers: `pull_request` against `main`, `push` to `main` (post-merge), `push` to `tech/mobile-e2e` (iteration on the e2e setup itself), and `workflow_dispatch`. The formerly skipped specs (`receipt_comments_test`, `receipt_cost_split_test`) are un-skipped and green — the product bugs they tracked are fixed — so nothing blocks flipping `continue-on-error` once CI demonstrates stability.
+- **CI Android + iOS** via `.github/workflows/mobile-e2e.yml`, currently **advisory** (`continue-on-error: true`). Triggers: `push` to `main` (post-merge), `push` to `tech/mobile-e2e` (iteration on the e2e setup itself), and `workflow_dispatch`. If `secrets.E2E_BASE_URL` is unset, both jobs are skipped (forks without demo credentials). The formerly skipped specs (`receipt_comments_test`, `receipt_cost_split_test`) are un-skipped and green — the product bugs they tracked are fixed — so nothing blocks flipping `continue-on-error` once CI demonstrates stability.
 
 Screenshot/video capture on failure is still deferred — see the "Out of scope" note at the bottom of this section.
 
