@@ -138,6 +138,18 @@ export class ReceiptFormComponent implements OnInit {
 
   public canDuplicate: Signal<boolean> = signal(false);
 
+  public canManageSupplierProfiles: Signal<boolean> = signal(false);
+
+  public canApplySupplierSuggestions: Signal<boolean> = signal(false);
+
+  public receiptName = signal("");
+
+  public supplierGroupId = signal(0);
+
+  public currencyIsExtracted = signal(false);
+
+  public magicFillApplied = signal(false);
+
   public selectedGroup = signal<Group | undefined>(undefined);
 
   public editLink = "";
@@ -407,6 +419,12 @@ export class ReceiptFormComponent implements OnInit {
     this.canDuplicate = this.store.selectSignal(
       AuthState.hasGroupPermission(groupId, Permission.GroupReceiptsDuplicate)
     );
+    this.canManageSupplierProfiles = this.store.selectSignal(
+      AuthState.hasGroupPermission(groupId, Permission.GroupReceiptsUpdate)
+    );
+    this.canApplySupplierSuggestions = this.store.selectSignal(
+      AuthState.hasGroupPermission(groupId, Permission.GroupReceiptsCreate)
+    );
   }
 
   private initForm(): void {
@@ -467,6 +485,9 @@ export class ReceiptFormComponent implements OnInit {
     this.setupAmountSyncListener();
     this.listenForGroupChanges();
     this.listenForSyncWithItemsChanges();
+    this.listenForSupplierDefaults();
+    this.currencyIsExtracted.set(!!this.originalReceipt);
+    this.magicFillApplied.set(false);
   }
 
   // Source the category/tag pickers from the selected group's AppData catalog
@@ -526,6 +547,26 @@ export class ReceiptFormComponent implements OnInit {
         }
       })
     )
+      .subscribe();
+  }
+
+  private listenForSupplierDefaults(): void {
+    this.form
+      .get("name")
+      ?.valueChanges.pipe(
+        untilDestroyed(this),
+        startWith(this.form.get("name")?.value ?? ""),
+        tap((name) => this.receiptName.set(name ?? ""))
+      )
+      .subscribe();
+
+    this.form
+      .get("groupId")
+      ?.valueChanges.pipe(
+        untilDestroyed(this),
+        startWith(this.form.get("groupId")?.value),
+        tap((groupId) => this.supplierGroupId.set(Number(groupId) || 0))
+      )
       .subscribe();
   }
 
@@ -618,6 +659,8 @@ export class ReceiptFormComponent implements OnInit {
   }
 
   private patchMagicValues(magicReceipt: Receipt): void {
+    this.currencyIsExtracted.set(true);
+    this.magicFillApplied.set(true);
     // A field is only reported as filled when it actually changes the form, so
     // an empty/unmatched value never claims a phantom fill. Scalars come first,
     // then each association through the form's existing builders (amount is

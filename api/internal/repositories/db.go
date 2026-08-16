@@ -164,6 +164,10 @@ func MakeMigrations() error {
 		&models.DataMigration{},
 		&models.OAuthClient{},
 		&models.OAuthAuthorizationCode{},
+		&models.SupplierProfile{},
+		&models.SupplierProfileAlias{},
+		&models.SupplierProfileCategory{},
+		&models.SupplierProfileTag{},
 	)
 
 	return err

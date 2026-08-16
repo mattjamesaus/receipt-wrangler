@@ -97,11 +97,15 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(ReportTemplateGrant.serializer)
       ..add(ReportTemplateOption.serializer)
       ..add(ResetPasswordCommand.serializer)
+      ..add(ResolveSupplierProfileCommand.serializer)
+      ..add(ResolveSupplierProfileResponse.serializer)
       ..add(Role.serializer)
       ..add(SearchResult.serializer)
       ..add(SignUpCommand.serializer)
       ..add(SortDirection.serializer)
       ..add(SubjectLineRegex.serializer)
+      ..add(SupplierProfile.serializer)
+      ..add(SupplierProfileAlias.serializer)
       ..add(SystemEmail.serializer)
       ..add(SystemSettings.serializer)
       ..add(SystemTask.serializer)
@@ -129,6 +133,7 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(UpsertReceiptCommand.serializer)
       ..add(UpsertReceiptProcessingSettingsCommand.serializer)
       ..add(UpsertRoleCommand.serializer)
+      ..add(UpsertSupplierProfileCommand.serializer)
       ..add(UpsertSystemEmailCommand.serializer)
       ..add(UpsertSystemSettingsCommand.serializer)
       ..add(UpsertTagCommand.serializer)
@@ -158,6 +163,16 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(Tag)]),
           () => ListBuilder<Tag>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(Category)]),
+          () => ListBuilder<Category>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(Tag)]),
+          () => ListBuilder<Tag>())
+      ..addBuilderFactory(
+          const FullType(
+              BuiltList, const [const FullType(SupplierProfileAlias)]),
+          () => ListBuilder<SupplierProfileAlias>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(CustomFieldOption)]),
           () => ListBuilder<CustomFieldOption>())
@@ -275,6 +290,15 @@ Serializers _$serializers = (Serializers().toBuilder()
           const FullType(BuiltList,
               const [const FullType(ReportRequestCommandFormatsEnum)]),
           () => ListBuilder<ReportRequestCommandFormatsEnum>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(int)]),
+          () => ListBuilder<int>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(int)]),
+          () => ListBuilder<int>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(SubjectLineRegex)]),
           () => ListBuilder<SubjectLineRegex>())

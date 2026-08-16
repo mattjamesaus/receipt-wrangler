@@ -1,0 +1,58 @@
+<app-table-header
+  headerText="Supplier defaults"
+  subtitle="Optional category, tag, and currency suggestions for recognised suppliers in this group."
+>
+  @if (canManage) {
+    <app-add-button
+      data-testid="supplier-profile-add"
+      buttonText="Add Supplier"
+      tooltip="Add Supplier"
+      (clicked)="openAddDialog()"
+    ></app-add-button>
+  }
+</app-table-header>
+
+<app-input
+  class="mb-3"
+  label="Search suppliers"
+  [inputFormControl]="search"
+></app-input>
+
+<div class="table-container">
+  <app-table
+    [columns]="columns"
+    [displayedColumns]="displayedColumns"
+    [dataSource]="dataSource()"
+    [pagination]="false"
+  ></app-table>
+</div>
+
+<ng-template #nameCell let-element="element">{{ element.name }}</ng-template>
+<ng-template #currencyCell let-element="element">{{ element.expectedDocumentCurrencyCode || "—" }}</ng-template>
+<ng-template #categoriesCell let-element="element">{{ names(element.categories) }}</ng-template>
+<ng-template #tagsCell let-element="element">{{ names(element.tags) }}</ng-template>
+<ng-template #aliasesCell let-element="element">{{ aliasNames(element) }}</ng-template>
+<ng-template #enabledCell let-element="element">{{ element.enabled ? "Enabled" : "Disabled" }}</ng-template>
+<ng-template #autoApplyCell let-element="element">{{ element.autoApply ? "On" : "Off" }}</ng-template>
+<ng-template #updatedCell let-element="element">{{ element.updatedAt | date }}</ng-template>
+<ng-template #actionsCell let-element="element">
+  @if (canManage) {
+    <app-edit-button
+      data-testid="supplier-profile-edit"
+      color="accent"
+      (clicked)="openEditDialog(element)"
+    ></app-edit-button>
+    <app-button
+      data-testid="supplier-profile-toggle"
+      matButtonType="iconButton"
+      [icon]="element.enabled ? 'visibility_off' : 'visibility'"
+      [tooltip]="element.enabled ? 'Disable' : 'Enable'"
+      color="accent"
+      (clicked)="toggleEnabled(element)"
+    ></app-button>
+    <app-delete-button
+      data-testid="supplier-profile-delete"
+      (clicked)="openDeleteDialog(element)"
+    ></app-delete-button>
+  }
+</ng-template>

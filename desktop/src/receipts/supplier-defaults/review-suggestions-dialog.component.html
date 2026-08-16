@@ -1,0 +1,61 @@
+<app-dialog headerText="Review supplier suggestions">
+  <p class="mb-3">
+    Apply defaults from <strong>{{ data.profile.name }}</strong>. Existing
+    categories and tags are kept.
+  </p>
+
+  @if ((data.profile.categories?.length ?? 0) > 0) {
+    <div class="mb-3">
+      <div class="fw-semibold mb-1">Categories to add</div>
+      @for (category of data.profile.categories; track category.id) {
+        <app-checkbox
+          [label]="category.name ?? ''"
+          [inputFormControl]="categoryControl(category.id)"
+        ></app-checkbox>
+      }
+    </div>
+  }
+
+  @if ((data.profile.tags?.length ?? 0) > 0) {
+    <div class="mb-3">
+      <div class="fw-semibold mb-1">Tags to add</div>
+      @for (tag of data.profile.tags; track tag.id) {
+        <app-checkbox
+          [label]="tag.name ?? ''"
+          [inputFormControl]="tagControl(tag.id)"
+        ></app-checkbox>
+      }
+    </div>
+  }
+
+  @if (data.profile.expectedDocumentCurrencyCode) {
+    <div class="mb-3">
+      <div class="fw-semibold mb-1">Document currency</div>
+      @if (currencyConflict) {
+        <p class="text-muted mb-2">
+          This profile expects {{ data.profile.expectedDocumentCurrencyCode }},
+          but the receipt currently says {{ data.currentCurrency }}.
+          @if (data.currencyIsExtracted) {
+            The extracted receipt value is kept unless you choose the profile currency.
+          } @else {
+            The receipt value is kept unless you choose the profile currency.
+          }
+        </p>
+      }
+      <app-checkbox
+        [label]="'Use expected currency ' + data.profile.expectedDocumentCurrencyCode"
+        [inputFormControl]="currencyControl"
+      ></app-checkbox>
+    </div>
+  }
+
+  <div class="d-flex justify-content-end align-items-center">
+    <app-button
+      data-testid="apply-supplier-suggestions"
+      buttonText="Apply selected suggestions"
+      color="primary"
+      (clicked)="apply()"
+    ></app-button>
+    <app-cancel-button (clicked)="cancel()"></app-cancel-button>
+  </div>
+</app-dialog>

@@ -1,0 +1,38 @@
+@if (hasName()) {
+  <div class="supplier-defaults-row w-100 mb-3" data-testid="supplier-defaults-row">
+    @if (matchedProfile(); as profile) {
+      <span>
+        Supplier defaults: {{ profile.name }}
+        @if (profile.autoApply) {
+          (auto-apply)
+        }
+      </span>
+      @if (!readonly() && canApply() && hasVisibleDefaults()) {
+        <app-button
+          data-testid="review-supplier-suggestions"
+          buttonText="Review suggestions"
+          color="accent"
+          (clicked)="reviewSuggestions()"
+        ></app-button>
+      }
+      @if (canManage()) {
+        <app-button
+          data-testid="manage-supplier-defaults"
+          buttonText="Manage"
+          color="accent"
+          (clicked)="manageProfile()"
+        ></app-button>
+      }
+    } @else {
+      <span>No supplier defaults</span>
+      @if (canManage() && !readonly()) {
+        <app-button
+          data-testid="save-supplier-defaults"
+          buttonText="Save as supplier defaults…"
+          color="accent"
+          (clicked)="saveAsDefaults()"
+        ></app-button>
+      }
+    }
+  </div>
+}

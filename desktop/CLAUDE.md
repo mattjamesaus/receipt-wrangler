@@ -963,6 +963,36 @@ helpers `withAdminApi` + `apiDeleteUserByName` / `apiDeleteGroupById` / `apiDele
     with the flag injected on, a **Legacy Editor** member (holds `group.receipts.quick-scan`) sees the button
     while the Viewer — same user, same flag — does not.
 
+## Supplier defaults (optional receipt suggestions)
+
+Group-scoped **supplier profiles** remember optional receipt-review defaults
+(categories, tags, expected document currency) for a recognised merchant name.
+They are **suggestions** unless a profile has **Auto-apply on ingest** enabled.
+See GitHub issue #5 and `api/CLAUDE.md` → "Supplier Profiles".
+
+- **Manage page:** `/receipts/group/:groupId/supplier-defaults`
+  (`SupplierDefaultsListComponent`) lists the selected group's profiles. Reach it
+  from the receipts-table header (`data-testid="supplier-defaults"`). List/view
+  is gated by `group.receipts.create`; create/edit/enable/delete by
+  `group.receipts.update` (no dedicated permission in this slice).
+- **Create/edit dialog:** `SupplierProfileFormDialogComponent` — name, aliases,
+  category/tag FormArrays (`[creatable]="false"`, sourced from
+  `AuthState.groupCategories` / `groupTags`), expected ISO 4217 currency, enabled,
+  and auto-apply. At least one default is required. Saving a profile from a
+  receipt does **not** mutate that receipt.
+- **Receipt form:** `app-supplier-suggestions-row` sits directly under **Name**.
+  It debounces the name and calls `SupplierProfileService.resolveSupplierProfile`.
+  No match → “No supplier defaults” + **Save as supplier defaults…** (manage
+  permission). Match → **Review suggestions** (apply) and **Manage**. When the
+  profile has `autoApply` and the form is a new receipt (or just Magic Filled),
+  visible defaults are applied once automatically; an extracted currency is kept.
+- **Review dialog:** merges selected categories/tags into the unsaved form
+  (never removes existing selections, including hidden grant associations already
+  on the FormArray). A currency conflict leaves the profile currency unchecked
+  so the receipt value is kept unless the reviewer opts in. Apply patches local
+  form state only; the normal Save still persists the receipt.
+- **API:** generated `SupplierProfileService` — never hand-edit `src/open-api/`.
+
 ## Magic Fill (receipt form)
 
 Distinct from Quick Scan (which creates a receipt entirely server-side): the ✨ **Magic Fill** button on the

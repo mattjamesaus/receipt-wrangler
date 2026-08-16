@@ -44,6 +44,10 @@ import { ReceiptCommentsComponent } from "./receipt-comments/receipt-comments.co
 import { ReceiptFormComponent } from "./receipt-form/receipt-form.component";
 import { ReceiptsRoutingModule } from "./receipts-routing.module";
 import { ReceiptsTableComponent } from "./receipts-table/receipts-table.component";
+import { ReviewSuggestionsDialogComponent } from "./supplier-defaults/review-suggestions-dialog.component";
+import { SupplierDefaultsListComponent } from "./supplier-defaults/supplier-defaults-list.component";
+import { SupplierProfileFormDialogComponent } from "./supplier-defaults/supplier-profile-form-dialog.component";
+import { SupplierSuggestionsRowComponent } from "./supplier-defaults/supplier-suggestions-row.component";
 import { ShareListComponent } from "./share-list/share-list.component";
 import { UploadImageComponent } from "./upload-image/upload-image.component";
 import { UserTotalWithPercentagePipe } from "./user-total-with-percentage.pipe";
@@ -59,6 +63,10 @@ import { UserTotalWithPercentagePipe } from "./user-total-with-percentage.pipe";
     ReceiptCommentsComponent,
     ReceiptFormComponent,
     ReceiptsTableComponent,
+    ReviewSuggestionsDialogComponent,
+    SupplierDefaultsListComponent,
+    SupplierProfileFormDialogComponent,
+    SupplierSuggestionsRowComponent,
     UploadImageComponent,
     UserTotalWithPercentagePipe,
     QuickScanDialogComponent,

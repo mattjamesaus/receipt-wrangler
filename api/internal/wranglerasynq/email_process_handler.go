@@ -181,6 +181,10 @@ func HandleEmailProcessTask(context context.Context, task *asynq.Task) error {
 
 	command.CreatedByString = "Email Integration"
 
+	if err = services.NewSupplierProfileService(nil).ApplyAutoDefaults(0, &command); err != nil {
+		return HandleError(err)
+	}
+
 	vErr := command.Validate(0, true)
 	if len(vErr.Errors) > 0 {
 		errBytes, _ := json.Marshal(vErr.Errors)

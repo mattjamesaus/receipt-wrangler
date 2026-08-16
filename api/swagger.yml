@@ -1114,6 +1114,203 @@ paths:
       security:
         - bearerAuth: [ ]
         - apiKeyAuth: [ ]
+  /group/{groupId}/supplierProfile:
+    parameters:
+      - in: path
+        name: groupId
+        schema:
+          type: integer
+        required: true
+        description: Group id that owns the supplier profiles
+    get:
+      tags:
+        - SupplierProfile
+      summary: List supplier profiles for a group
+      description: >-
+        Returns every supplier profile in the group. Categories and tags on each
+        profile are filtered to those the caller is permitted to use. Gated by
+        group.receipts.create.
+      operationId: getSupplierProfilesForGroup
+      responses:
+        200:
+          description: The group's supplier profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplierProfile"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
+    post:
+      tags:
+        - SupplierProfile
+      summary: Create a supplier profile
+      description: >-
+        Creates a group-scoped supplier profile with optional default
+        categories, tags, and expected document currency. At least one default
+        is required. Canonical names and aliases must be unique within the
+        group after normalisation. Gated by group.receipts.update.
+      operationId: createSupplierProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertSupplierProfileCommand"
+      responses:
+        200:
+          description: The created supplier profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplierProfile"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
+  /group/{groupId}/supplierProfile/resolve:
+    post:
+      tags:
+        - SupplierProfile
+      summary: Resolve a supplier profile for a receipt name
+      description: >-
+        Returns the single enabled profile whose canonical name or alias matches
+        the supplied receipt name after normalisation. Ambiguous or disabled
+        matches return a null profile. Never applies defaults. Gated by
+        group.receipts.create.
+      operationId: resolveSupplierProfile
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            type: integer
+          required: true
+          description: Group id to resolve within
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResolveSupplierProfileCommand"
+      responses:
+        200:
+          description: The matching profile, or profile null when none / ambiguous
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResolveSupplierProfileResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
+  /group/{groupId}/supplierProfile/{profileId}:
+    parameters:
+      - in: path
+        name: groupId
+        schema:
+          type: integer
+        required: true
+        description: Group id that owns the supplier profile
+      - in: path
+        name: profileId
+        schema:
+          type: integer
+        required: true
+        description: Supplier profile id
+    get:
+      tags:
+        - SupplierProfile
+      summary: Get a supplier profile
+      description: >-
+        Returns one supplier profile in the group. Categories and tags are
+        filtered to those the caller is permitted to use. Gated by
+        group.receipts.create.
+      operationId: getSupplierProfileById
+      responses:
+        200:
+          description: The supplier profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplierProfile"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
+    put:
+      tags:
+        - SupplierProfile
+      summary: Update a supplier profile
+      description: >-
+        Replaces a supplier profile's name, aliases, defaults, expected
+        currency, and enabled state. Enable/disable is part of this update.
+        Gated by group.receipts.update.
+      operationId: updateSupplierProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertSupplierProfileCommand"
+      responses:
+        200:
+          description: The updated supplier profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplierProfile"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
+    delete:
+      tags:
+        - SupplierProfile
+      summary: Delete a supplier profile
+      description: >-
+        Deletes a supplier profile and its aliases. Receipts and source files
+        are unchanged. Gated by group.receipts.update.
+      operationId: deleteSupplierProfile
+      responses:
+        200:
+          description: The profile was deleted
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/Internal"
+      security:
+        - bearerAuth: [ ]
+        - apiKeyAuth: [ ]
   /group/{groupId}/member/{userId}/grants:
     put:
       tags:
@@ -3936,6 +4133,138 @@ components:
           type: integer
           description: Number of receipts associated with this category
       description: Category to relate receipts to
+    SupplierProfileAlias:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        createdAt:
+          type: string
+        createdBy:
+          type: integer
+          format: uint64
+        createdByString:
+          type: string
+        updatedAt:
+          type: string
+        supplierProfileId:
+          type: integer
+          format: uint64
+        groupId:
+          type: integer
+          format: uint64
+        name:
+          type: string
+          description: Display alias as entered
+        normalisedName:
+          type: string
+          description: Normalised alias used for matching
+    SupplierProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        createdAt:
+          type: string
+        createdBy:
+          type: integer
+          format: uint64
+        createdByString:
+          type: string
+        updatedAt:
+          type: string
+        groupId:
+          type: integer
+          format: uint64
+        name:
+          type: string
+          description: Canonical supplier display name
+        normalisedName:
+          type: string
+          description: Normalised canonical name used for matching
+        expectedDocumentCurrencyCode:
+          type: string
+          nullable: true
+          description: Optional expected ISO 4217 document currency
+        enabled:
+          type: boolean
+          description: Disabled profiles remain stored but do not match
+        autoApply:
+          type: boolean
+          description: >-
+            When true, matching receipts created via email, quick scan, or the
+            create-receipt API receive these defaults automatically. Extracted
+            document currency is never overwritten.
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        aliases:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupplierProfileAlias"
+      description: >-
+        Group-scoped supplier profile that stores optional receipt-review
+        defaults. Defaults are suggestions unless autoApply is enabled.
+    UpsertSupplierProfileCommand:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Canonical supplier display name
+        aliases:
+          type: array
+          items:
+            type: string
+          description: Additional names that should match this profile
+        categoryIds:
+          type: array
+          items:
+            type: integer
+            format: uint64
+          description: Default category ids from the catalogue
+        tagIds:
+          type: array
+          items:
+            type: integer
+            format: uint64
+          description: Default tag ids from the catalogue
+        expectedDocumentCurrencyCode:
+          type: string
+          nullable: true
+          description: Optional expected ISO 4217 document currency
+        enabled:
+          type: boolean
+          description: Whether the profile participates in matching. Defaults to true on create.
+        autoApply:
+          type: boolean
+          description: >-
+            When true, matching ingested receipts receive these defaults
+            automatically. Defaults to false on create.
+    ResolveSupplierProfileCommand:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Receipt name to match against profiles and aliases
+    ResolveSupplierProfileResponse:
+      type: object
+      properties:
+        profile:
+          allOf:
+            - $ref: "#/components/schemas/SupplierProfile"
+          nullable: true
+          description: Matching enabled profile, or null when none / ambiguous
     Comment:
       required:
         - comment

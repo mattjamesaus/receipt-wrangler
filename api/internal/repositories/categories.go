@@ -121,6 +121,11 @@ func (repository CategoryRepository) DeleteCategory(categoryId uint) error {
 			return err
 		}
 
+		err = tx.Delete(&models.SupplierProfileCategory{}, "category_id = ?", categoryId).Error
+		if err != nil {
+			return err
+		}
+
 		err = tx.Where("id = ?", categoryId).Delete(&models.Category{}).Error
 		if err != nil {
 			return err

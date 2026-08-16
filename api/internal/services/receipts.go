@@ -372,6 +372,10 @@ func (service ReceiptService) QuickScan(params QuickScanParams) (models.Receipt,
 		})
 	}
 
+	if err = NewSupplierProfileService(service.TX).ApplyAutoDefaults(token.UserId, &receiptCommand); err != nil {
+		return models.Receipt{}, recordEarlyQuickScanFailure(err)
+	}
+
 	vErr := receiptCommand.Validate(token.UserId, true)
 	if len(vErr.Errors) > 0 {
 		errBytes, _ := json.Marshal(vErr.Errors)

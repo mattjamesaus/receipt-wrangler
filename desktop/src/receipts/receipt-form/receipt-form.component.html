@@ -35,6 +35,17 @@
               [inputFormControl]="form | formGet : 'name'"
               [readonly]="mode | inputReadonly"
             ></app-input>
+            <app-supplier-suggestions-row
+              class="w-100"
+              [form]="form"
+              [groupId]="supplierGroupId()"
+              [receiptName]="receiptName()"
+              [canManage]="canManageSupplierProfiles()"
+              [canApply]="canApplySupplierSuggestions()"
+              [readonly]="mode | inputReadonly"
+              [currencyIsExtracted]="currencyIsExtracted()"
+              [allowAutoApply]="mode === formMode.add || magicFillApplied()"
+            ></app-supplier-suggestions-row>
             <div class="d-flex align-items-center w-100">
               <app-input
                 class="w-100"

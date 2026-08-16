@@ -132,6 +132,11 @@ func (repository TagsRepository) DeleteTag(tagId uint) error {
 			return err
 		}
 
+		err = tx.Delete(&models.SupplierProfileTag{}, "tag_id = ?", tagId).Error
+		if err != nil {
+			return err
+		}
+
 		err = tx.Where("id = ?", tagId).Delete(&models.Tag{}).Error
 		if err != nil {
 			return err

@@ -152,6 +152,12 @@ Class | Method | HTTP request | Description
 [*RoleApi*](doc/RoleApi.md) | [**setDefaultRole**](doc/RoleApi.md#setdefaultrole) | **PUT** /role/{roleId}/default | Set default role
 [*RoleApi*](doc/RoleApi.md) | [**updateRole**](doc/RoleApi.md#updaterole) | **PUT** /role/{roleId} | Update role
 [*SearchApi*](doc/SearchApi.md) | [**receiptSearch**](doc/SearchApi.md#receiptsearch) | **GET** /search/ | Receipt Search
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**createSupplierProfile**](doc/SupplierProfileApi.md#createsupplierprofile) | **POST** /group/{groupId}/supplierProfile | Create a supplier profile
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**deleteSupplierProfile**](doc/SupplierProfileApi.md#deletesupplierprofile) | **DELETE** /group/{groupId}/supplierProfile/{profileId} | Delete a supplier profile
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**getSupplierProfileById**](doc/SupplierProfileApi.md#getsupplierprofilebyid) | **GET** /group/{groupId}/supplierProfile/{profileId} | Get a supplier profile
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**getSupplierProfilesForGroup**](doc/SupplierProfileApi.md#getsupplierprofilesforgroup) | **GET** /group/{groupId}/supplierProfile | List supplier profiles for a group
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**resolveSupplierProfile**](doc/SupplierProfileApi.md#resolvesupplierprofile) | **POST** /group/{groupId}/supplierProfile/resolve | Resolve a supplier profile for a receipt name
+[*SupplierProfileApi*](doc/SupplierProfileApi.md) | [**updateSupplierProfile**](doc/SupplierProfileApi.md#updatesupplierprofile) | **PUT** /group/{groupId}/supplierProfile/{profileId} | Update a supplier profile
 [*SystemEmailApi*](doc/SystemEmailApi.md) | [**checkSystemEmailConnectivity**](doc/SystemEmailApi.md#checksystememailconnectivity) | **POST** /systemEmail/checkConnectivity | Check system email connectivity
 [*SystemEmailApi*](doc/SystemEmailApi.md) | [**createSystemEmail**](doc/SystemEmailApi.md#createsystememail) | **POST** /systemEmail/ | Create system email
 [*SystemEmailApi*](doc/SystemEmailApi.md) | [**deleteSystemEmailById**](doc/SystemEmailApi.md#deletesystememailbyid) | **DELETE** /systemEmail/{id} | Delete system email by id
@@ -276,11 +282,15 @@ Class | Method | HTTP request | Description
  - [ReportTemplateGrant](doc/ReportTemplateGrant.md)
  - [ReportTemplateOption](doc/ReportTemplateOption.md)
  - [ResetPasswordCommand](doc/ResetPasswordCommand.md)
+ - [ResolveSupplierProfileCommand](doc/ResolveSupplierProfileCommand.md)
+ - [ResolveSupplierProfileResponse](doc/ResolveSupplierProfileResponse.md)
  - [Role](doc/Role.md)
  - [SearchResult](doc/SearchResult.md)
  - [SignUpCommand](doc/SignUpCommand.md)
  - [SortDirection](doc/SortDirection.md)
  - [SubjectLineRegex](doc/SubjectLineRegex.md)
+ - [SupplierProfile](doc/SupplierProfile.md)
+ - [SupplierProfileAlias](doc/SupplierProfileAlias.md)
  - [SystemEmail](doc/SystemEmail.md)
  - [SystemSettings](doc/SystemSettings.md)
  - [SystemTask](doc/SystemTask.md)
@@ -308,6 +318,7 @@ Class | Method | HTTP request | Description
  - [UpsertReceiptCommand](doc/UpsertReceiptCommand.md)
  - [UpsertReceiptProcessingSettingsCommand](doc/UpsertReceiptProcessingSettingsCommand.md)
  - [UpsertRoleCommand](doc/UpsertRoleCommand.md)
+ - [UpsertSupplierProfileCommand](doc/UpsertSupplierProfileCommand.md)
  - [UpsertSystemEmailCommand](doc/UpsertSystemEmailCommand.md)
  - [UpsertSystemSettingsCommand](doc/UpsertSystemSettingsCommand.md)
  - [UpsertTagCommand](doc/UpsertTagCommand.md)

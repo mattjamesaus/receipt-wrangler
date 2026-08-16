@@ -103,6 +103,8 @@ doc/ReportTemplate.md
 doc/ReportTemplateGrant.md
 doc/ReportTemplateOption.md
 doc/ResetPasswordCommand.md
+doc/ResolveSupplierProfileCommand.md
+doc/ResolveSupplierProfileResponse.md
 doc/Role.md
 doc/RoleApi.md
 doc/SearchApi.md
@@ -110,6 +112,9 @@ doc/SearchResult.md
 doc/SignUpCommand.md
 doc/SortDirection.md
 doc/SubjectLineRegex.md
+doc/SupplierProfile.md
+doc/SupplierProfileAlias.md
+doc/SupplierProfileApi.md
 doc/SystemEmail.md
 doc/SystemEmailApi.md
 doc/SystemSettings.md
@@ -141,6 +146,7 @@ doc/UpsertPromptCommand.md
 doc/UpsertReceiptCommand.md
 doc/UpsertReceiptProcessingSettingsCommand.md
 doc/UpsertRoleCommand.md
+doc/UpsertSupplierProfileCommand.md
 doc/UpsertSystemEmailCommand.md
 doc/UpsertSystemSettingsCommand.md
 doc/UpsertTagCommand.md
@@ -176,6 +182,7 @@ lib/src/api/receipt_processing_settings_api.dart
 lib/src/api/report_api.dart
 lib/src/api/role_api.dart
 lib/src/api/search_api.dart
+lib/src/api/supplier_profile_api.dart
 lib/src/api/system_email_api.dart
 lib/src/api/system_settings_api.dart
 lib/src/api/system_task_api.dart
@@ -276,11 +283,15 @@ lib/src/model/report_template.dart
 lib/src/model/report_template_grant.dart
 lib/src/model/report_template_option.dart
 lib/src/model/reset_password_command.dart
+lib/src/model/resolve_supplier_profile_command.dart
+lib/src/model/resolve_supplier_profile_response.dart
 lib/src/model/role.dart
 lib/src/model/search_result.dart
 lib/src/model/sign_up_command.dart
 lib/src/model/sort_direction.dart
 lib/src/model/subject_line_regex.dart
+lib/src/model/supplier_profile.dart
+lib/src/model/supplier_profile_alias.dart
 lib/src/model/system_email.dart
 lib/src/model/system_settings.dart
 lib/src/model/system_task.dart
@@ -308,6 +319,7 @@ lib/src/model/upsert_prompt_command.dart
 lib/src/model/upsert_receipt_command.dart
 lib/src/model/upsert_receipt_processing_settings_command.dart
 lib/src/model/upsert_role_command.dart
+lib/src/model/upsert_supplier_profile_command.dart
 lib/src/model/upsert_system_email_command.dart
 lib/src/model/upsert_system_settings_command.dart
 lib/src/model/upsert_tag_command.dart
@@ -321,3 +333,9 @@ lib/src/model/widget.dart
 lib/src/model/widget_type.dart
 lib/src/serializers.dart
 pubspec.yaml
+test/resolve_supplier_profile_command_test.dart
+test/resolve_supplier_profile_response_test.dart
+test/supplier_profile_alias_test.dart
+test/supplier_profile_api_test.dart
+test/supplier_profile_test.dart
+test/upsert_supplier_profile_command_test.dart
