@@ -152,16 +152,22 @@ jobs:
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - name: Get build date
         id: date
         run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-      - name: Login to Docker Hub
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2.1.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.8.0
       - name: Build and push ARM64
@@ -171,7 +177,7 @@ jobs:
           platforms: linux/arm64
           file: ./docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/receipt-wrangler:latest-arm64
+          tags: ${{ env.IMAGE }}:latest-arm64
           build-args: |
             VERSION=latest
             BUILD_DATE=${{ steps.date.outputs.date }}
@@ -184,16 +190,22 @@ jobs:
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - name: Get build date
         id: date
         run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-      - name: Login to Docker Hub
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2.1.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.8.0
       - name: Build and push AMD64
@@ -203,7 +215,7 @@ jobs:
           platforms: linux/amd64
           file: ./docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/receipt-wrangler:latest-amd64
+          tags: ${{ env.IMAGE }}:latest-amd64
           build-args: |
             VERSION=latest
             BUILD_DATE=${{ steps.date.outputs.date }}
@@ -215,32 +227,30 @@ jobs:
       needs.build-docker-arm64.result == 'success' &&
       needs.build-docker-amd64.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Login to Docker Hub
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2.1.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Multi-Arch Manifest
         uses: int128/docker-manifest-create-action@v2
         with:
-          tags: ${{ secrets.DOCKER_USERNAME }}/receipt-wrangler:latest
+          tags: ${{ env.IMAGE }}:latest
           sources: |
-            ${{ secrets.DOCKER_USERNAME }}/receipt-wrangler:latest-amd64
-            ${{ secrets.DOCKER_USERNAME }}/receipt-wrangler:latest-arm64
+            ${{ env.IMAGE }}:latest-amd64
+            ${{ env.IMAGE }}:latest-arm64
       - name: Cleanup Architecture-Specific Tags
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
-            -d "{\"username\": \"${DOCKER_USERNAME}\", \"password\": \"${DOCKER_TOKEN}\"}" \
-            https://hub.docker.com/v2/users/login/ | jq -r .token)
-
-          curl -X DELETE \
-            -H "Authorization: Bearer ${TOKEN}" \
-            "https://hub.docker.com/v2/repositories/${DOCKER_USERNAME}/receipt-wrangler/tags/latest-amd64/"
-
-          curl -X DELETE \
-            -H "Authorization: Bearer ${TOKEN}" \
-            "https://hub.docker.com/v2/repositories/${DOCKER_USERNAME}/receipt-wrangler/tags/latest-arm64/"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_TYPE: ${{ github.event.repository.owner.type }}
+        run: bash .github/scripts/delete-ghcr-tags.sh latest-amd64 latest-arm64

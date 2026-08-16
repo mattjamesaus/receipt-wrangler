@@ -59,6 +59,13 @@ docker build -f docker/Dockerfile -t receipt-wrangler .
 docker build -f docker/dev/Dockerfile -t receipt-wrangler-dev .
 ```
 
+### Published images
+CI publishes the production monolith to GitHub Container Registry (`ghcr.io/<owner>/receipt-wrangler`):
+- Push to `main` → `:latest` (multi-arch amd64 + arm64)
+- GitHub Release → `:<release-tag>`
+
+Auth in Actions uses `GITHUB_TOKEN` with `packages: write`; no Docker Hub credentials. After the first publish, make the GHCR package **public** in the repo's Packages settings so anonymous `docker pull` works.
+
 ## API Client Regeneration
 
 When the API swagger.yml changes, regenerate clients:
